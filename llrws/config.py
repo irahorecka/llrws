@@ -10,3 +10,4 @@ class Config:
 
     DEBUG = True
     TESTING = False
+    SERVER_NAME = "localhost:5000"

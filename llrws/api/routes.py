@@ -5,16 +5,12 @@
 Flask blueprint to handle routes for the LLR Web Service API.
 """
 
-from flask import jsonify, render_template, Blueprint
+from flask import Blueprint
 
-api = Blueprint("api", __name__)
+from llrws.api.endpoints import HelloWorld
+
+api_bp = Blueprint("api", __name__)
 
 
-@api.route("/", subdomain="api")
-def index():
-    """Landing page of personal website."""
-    content = {
-        "title": "Home",
-        "profile_img": "profile.png",
-    }
-    return jsonify(content)
+def initialize_routes(api):
+    api.add_resource(HelloWorld, "/")
