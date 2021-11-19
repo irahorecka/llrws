@@ -1,5 +1,6 @@
 # Web Service requirements
 flask
+flask-restful
 # Developer tools requirements
 absolufy-imports
 black
