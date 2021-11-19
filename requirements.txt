@@ -1,0 +1,8 @@
+# Web Service requirements
+flask
+# Developer tools requirements
+absolufy-imports
+black
+flake8
+pre-commit
+pylint
