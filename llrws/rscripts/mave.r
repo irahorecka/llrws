@@ -10,17 +10,15 @@ option_list = list(
     make_option(c("-r", "--reference"), type="character", default=NULL,
                 help="reference dataset name", metavar="character"),
     make_option(c("-s", "--score"), type="character", default=NULL,
-                help="score dataset name", metavar="character")
+                help="score dataset name", metavar="character"),
+    make_option(c("-d", "--downloadpath"), type="character", default=NULL,
+                help="path to download output", metavar="character"),
+    make_option(c("-k", "--key"), type="character", default=NULL,
+                help="unique identifier key", metavar="character")
                 );
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
-
-# Check valid file path is provided
-if (is.null(opt$reference)){
-  print_help(opt_parser)
-  stop("At least one argument must be supplied (input file).", call.=FALSE)
-}
 
 #load MAVE dataset from file
 mave <- read.csv(opt$score,comment.char="#")
@@ -37,14 +35,16 @@ negScores <- na.omit(mave[with(benchmark,hgvsp[referenceSet=="Negative"]),"score
 #call the buildLLR.kernel function from maveLLR using the two reference score vectors
 llrObj <- buildLLR.kernel(posScores,negScores,bw=0.1,kernel="gaussian")
 
-#optional: use a helper function to draw a visualization of the LLR function
-drawDensityLLR(mave$score, llrObj$llr, llrObj$posDens, llrObj$negDens, posScores, negScores)
-
 #calculate the actual LLR values for the full MAVE dataset using the LLR function
 mave$llr <- llrObj$llr(mave$score)
 
 #calculate a 95% confidence interval for the LLR values
 mave$llrCIlower <- llrObj$llr(qnorm(0.025,mave$score,mave$se))
 mave$llrCIupper <- llrObj$llr(qnorm(0.975,mave$score,mave$se))
+
 #export results to file
-write.csv(mave,"maveLLRs.csv")
+export_filename <- paste(opt$downloadpath, "/", opt$key, "-maveLLRs.csv", sep="")
+write.csv(mave, paste(export_filename, sep=""))
+
+# write unique filename to stdout
+write(export_filename, stdout())
