@@ -9,20 +9,20 @@ library(maveLLR)
 # Get external arguments passed by the command line.
 # ==============================================================================
 
-option_list = list(
+option_list <- list(
     # Full filepath to the reference CSV file.
-    make_option(c("-r", "--reference"), type="character", default=NULL,
-                help="reference dataset filepath", metavar="character"),
+    make_option(c("-r","--reference"),type="character",default=NULL,
+                help="reference dataset filepath",metavar="character"),
     # Full filepath to the score CSV file.
-    make_option(c("-s", "--score"), type="character", default=NULL,
-                help="score dataset filepath", metavar="character"),
+    make_option(c("-s","--score"),type="character",default=NULL,
+                help="score dataset filepath",metavar="character"),
     # Full filepath to the download (maveLLR-processed) CSV file.
-    make_option(c("-d", "--download"), type="character", default=NULL,
-                help="download maveLLR dataset filepath", metavar="character")
+    make_option(c("-d","--download"),type="character",default=NULL,
+                help="download maveLLR dataset filepath",metavar="character")
 );
 
-opt_parser = OptionParser(option_list=option_list)
-opt = parse_args(opt_parser)
+opt_parser <- OptionParser(option_list=option_list)
+opt <- parse_args(opt_parser)
 
 # ==============================================================================
 
