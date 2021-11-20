@@ -4,7 +4,7 @@ import subprocess
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def execute_maveLLR_script(reference_path, score_path, download_path, unique_key):
+def execute_maveLLR_script(reference_path, score_path, download_path, unique_key=None):
     """Executes mave.r and writes unique output file to {}
 
     Args:
