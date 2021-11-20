@@ -20,3 +20,4 @@ class Config:
     MAX_CONTENT_LENGTH = 1024 * 1024
     UPLOAD_EXTENSIONS = [".csv"]
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+    DOWNLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
