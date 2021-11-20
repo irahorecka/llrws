@@ -16,12 +16,9 @@ option_list = list(
     # Full filepath to the score CSV file.
     make_option(c("-s", "--score"), type="character", default=NULL,
                 help="score dataset filepath", metavar="character"),
-    # Full filepath to the download (postprocessed) CSV file.
-    make_option(c("-d", "--downloadpath"), type="character", default=NULL,
-                help="download dataset filepath", metavar="character"),
-    # Unique identifier (str).
-    make_option(c("-k", "--key"), type="character", default=NULL,
-                help="unique identifier key", metavar="character")
+    # Full filepath to the download (maveLLR-processed) CSV file.
+    make_option(c("-d", "--download"), type="character", default=NULL,
+                help="download maveLLR dataset filepath", metavar="character")
 );
 
 opt_parser = OptionParser(option_list=option_list)
@@ -61,9 +58,8 @@ mave$llrCIupper <- llrObj$llr(qnorm(0.975,mave$score,mave$se))
 # Export results to file and return control to caller.
 # ==============================================================================
 
-export_filename <- paste(opt$downloadpath, "/", opt$key, "-maveLLRs.csv", sep="")
-write.csv(mave, paste(export_filename, sep=""))
-# Write unique filename to stdout.
-write(export_filename, stdout())
+write.csv(mave,opt$download)
+# Return success exit code to caller.
+quit(status=0)
 
 # ==============================================================================
