@@ -1,10 +1,14 @@
+import os
 from uuid import uuid4
 
+from flask import current_app
 from flask_restful import Resource, reqparse
 import werkzeug
 
+from llrws.utils import send_file_for_download
 
-class HelloWorld(Resource):
+
+class LLR(Resource):
     def get(self):
         return {"hello": "world"}
 
@@ -15,5 +19,6 @@ class HelloWorld(Resource):
         args = parse.parse_args()
         image_file = args["file"]
         filename = f"{uuid4()}.csv"
-        image_file.save(filename)
-        print(filename)
+        image_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
+
+        return send_file_for_download("table-1.csv", "test.csv")
