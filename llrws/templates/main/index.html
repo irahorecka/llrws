@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <table id="data" class="display compact table table-striped" width="100%">
+    <thead>
+      <tr>
+        <th>hgvs_pro</th>
+        <th>score</th>
+        <th>sd</th>
+        <th>se</th>
+        <th>llr</th>
+        <th>llrCIlower</th>
+        <th>llrCIupper</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+{% endblock %}
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        ajax: '/data',
+        columns: [
+          {data: 'hgvs_pro'},
+          {data: 'score', searchable: false},
+          {data: 'sd', searchable: false},
+          {data: 'se', searchable: false},
+          {data: 'llr', searchable: false},
+          {data: 'llrCIlower', searchable: false},
+          {data: 'llrCIupper', searchable: false},
+        ],
+        pageLength: 50,
+        scrollY: "500px",
+        scrollCollapse: true,
+      });
+    });
+  </script>
+{% endblock %}

@@ -17,11 +17,15 @@ def create_app(config_class=Config):
     """Creates Flask application instance."""
     application.config.from_object(config_class)
 
+    from llrws.main.routes import main
+
+    application.register_blueprint(main)
+
+    # Register RESTful API
     from llrws.api.routes import api_bp
 
     api = Api(api_bp)
     initialize_routes(api)
-
     application.register_blueprint(api_bp, url_prefix="/api")
 
     return application

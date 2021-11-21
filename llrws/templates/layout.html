@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Why hello there, Mrs. SneakyPants ಠ‿ಠ -->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="Automated Enrichment worklist generator">
+  <meta
+      name='viewport'
+      content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='external/bootstrap-5.0.2/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='external/fontawesome-5.15.4/css/all.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='external/DataTables-1.11.3/css/dataTables.bootstrap5.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='external/mvp.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/latolatinfonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link class="img-fluid rounded-circle float-left mr-2" rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/personalis.png') }}">
+  <script src="{{ url_for('static', filename="external/jquery-3.6.0.min.js") }}"></script>
+  <script src="{{ url_for('static', filename="external/bootstrap-5.0.2/js/bootstrap.min.js") }}"></script>
+  <title>{{ content.title }}</title>
+</head>
+<body id="llrws">
+  <header>
+      <nav>
+        <div class="nav-left"><a href="{{ url_for('main.index') }}"><i id="home" class="fa fa-home" aria-hidden="true" title="Home"></i></a></div>
+        <div class="nav-right"><a href="{{ url_for('main.settings') }}"><i id="settings" class="fa fa-cogs" aria-hidden="true" title="Settings"></i></a></div>
+      </nav>
+  </header>
+  <main>
+    <div class="container">
+      {%- block content -%}{%- endblock -%}
+    </div>
+  </main>
+  <footer>
+    <p>
+      <small>The Roth Lab Team</small>
+    </p>
+  </footer>
+  <script src="{{ url_for('static', filename='external/DataTables-1.11.3/js/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='external/DataTables-1.11.3/js/dataTables.bootstrap5.min.js') }}"></script>
+  {%- block scripts -%}{%- endblock -%}
+</body>
+</html>
