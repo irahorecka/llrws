@@ -4,35 +4,33 @@ from flask import current_app, send_file
 from werkzeug.utils import secure_filename
 
 
-def save_CSV_fileobj_to_filepath(fileobj, filepath):
-    """Validates then saves CSV fileobj as filepath if validation is successful.
+def save_fileobj_to_filepath(fileobj, filepath, file_descriptor):
+    """Validates then saves fileobj to filepath. Descriptive error with file_descriptor is returned if
+    validation fails.
 
     Args:
-        fileobj (werkzeug.datastructures.FileStorage): FileStorage object to validate and save
-        filepath (str): Filepath to save fileobj if validation succeeds
+        fileobj (werkzeug.datastructures.FileStorage): FileStorage instance of a file
+        filepath (str): File path to save fileobj
+        file_descriptor (str): Description of file
 
     Returns:
         (bool, str): Indicator of validation success, "" (if success) or error message (if failure)
     """
-    # Null error message
     error_msg = ""
-    # Convert fileobj.filename to secure filename before evaluating.
-    filename = secure_filename(fileobj.filename)
-    # Extract missing filetype: e.g., 'reference' from 'X-X-X-X-X-reference.csv'.
-    missing_filetype = f'MAVE {filepath.split("-")[-1].split(".")[0]}'
 
     # Validate fileobj
-    if not fileobj:
-        error_msg = f"Missing {missing_filetype} CSV file."
+    if fileobj is None:
+        error_msg = f"Missing {file_descriptor} file."
         return False, error_msg
-    # Validate filename
+    # Convert fileobj.filename to secure filename before evaluating.
+    filename = secure_filename(fileobj.filename)
     if not bool(filename):
-        error_msg = f"Missing {missing_filetype} CSV file."
+        error_msg = f"Missing {file_descriptor} file."
         return False, error_msg
     # Validate file extension
     fileext = os.path.splitext(filename)[1]
     if fileext.lower() not in current_app.config["UPLOAD_EXTENSIONS"]:
-        error_msg = f"{missing_filetype} file does not have one of the allowed extensions: {' '.join(current_app.config['UPLOAD_EXTENSIONS'])}"
+        error_msg = f"{file_descriptor} file does not have one of the allowed extensions: {' '.join(current_app.config['UPLOAD_EXTENSIONS'])}"
         return False, error_msg
 
     # Save file
@@ -66,7 +64,7 @@ def rm_files(filepaths):
     """Exhaustively removes files in an iterable of file paths.
 
     Args:
-        filepaths (iter): An iterable of file paths to be removed
+        filepaths (iter[(str)]): An iterable of file paths to be removed
 
     Returns:
         (None)
