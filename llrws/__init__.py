@@ -22,6 +22,6 @@ def create_app(config_class=Config):
     api = Api(api_bp)
     initialize_routes(api)
 
-    application.register_blueprint(api_bp, subdomain="api")
+    application.register_blueprint(api_bp, url_prefix="/api")
 
     return application

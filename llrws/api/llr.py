@@ -16,17 +16,18 @@ class LLR(Resource):
     parse.add_argument("score_file", type=werkzeug.datastructures.FileStorage, location="files")
 
     def get(self):
-        return {"hello": "world"}
+        return {"rothlab": "LLR Web Service"}
 
     def post(self):
-        # Example cURL call: curl -v POST -H "Content-Type: multipart/form-data" -F "benchmark_file=@table-1.csv" -F "score_file=@table-2.csv" http://api.localhost:5000
-        # Get unique ID for session.
-        session_id = uuid4()
+        # Example cURL call: curl -v POST -H "Content-Type: multipart/form-data" -F "benchmark_file=@table-1.csv" -F "score_file=@table-2.csv" http://localhost:5000/api/
         # Get parse_args instantiated obj.
         args = self.parse.parse_args()
-        # Declare benchmark CSV filepath.
+
+        # Get unique ID for session.
+        session_id = uuid4()
+        # Declare input benchmark CSV filepath.
         benchmark_filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-benchmark.csv")
-        # Declare score CSV filepath.
+        # Declare inpt score CSV filepath.
         score_filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-score.csv")
         # Declare output filepath for maveLLR-processed CSV file.
         output_filepath = os.path.join(current_app.config["DOWNLOAD_FOLDER"], f"{session_id}-maveLLR.csv")
