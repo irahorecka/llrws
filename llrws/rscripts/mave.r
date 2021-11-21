@@ -62,7 +62,7 @@ mave$llrCIupper <- llrObj$llr(qnorm(0.975,mave$score,mave$se))
 # Export results to file and return control to caller.
 # ==============================================================================
 
-write.csv(mave,download_csv_filepath)
+write.csv(mave,download_csv_filepath,row.names=FALSE)
 # Return success exit code to caller.
 quit(status=0)
 
