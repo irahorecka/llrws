@@ -4,8 +4,8 @@ from flask import current_app, send_file
 from werkzeug.utils import secure_filename
 
 
-def save_fileobj_to_filepath(fileobj, filepath, file_descriptor):
-    """Validates then saves fileobj to filepath. Descriptive error with file_descriptor is returned if
+def save_fileobj_to_filepath(fileobj, filepath, file_descriptor="unknown"):
+    """Validates then saves fileobj to filepath. Descriptive error is returned if
     validation fails.
 
     Args:
@@ -14,7 +14,8 @@ def save_fileobj_to_filepath(fileobj, filepath, file_descriptor):
         file_descriptor (str): Description of file
 
     Returns:
-        (bool, str): Indicator of validation success, "" (if success) or error message (if failure)
+        (bool): Indicative of validation success (True) or failure (False)
+        (str): "" or error message if validation success or failure, respectively
     """
     error_msg = ""
 
@@ -39,11 +40,11 @@ def save_fileobj_to_filepath(fileobj, filepath, file_descriptor):
 
 
 def send_file_for_download(filepath, filename):
-    """Sends a file for download to the web-app user.
+    """Sends a file for download to caller.
 
     Args:
-        filepath (str): Path to file to send for download
-        filename (str): File name to attach to file for download
+        filepath (str): Path of file to send for download
+        filename (str): File name to attach to download file
 
     Returns:
         (flask.wrappers.Response): File object for download

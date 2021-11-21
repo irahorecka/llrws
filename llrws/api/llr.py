@@ -5,8 +5,8 @@ from flask import current_app
 from flask_restful import Resource, reqparse
 import werkzeug
 
-from llrws.web_utils import rm_files, save_fileobj_to_filepath, send_file_for_download
 from llrws.rscripts import execute_maveLLR_script
+from llrws.web_utils import rm_files, save_fileobj_to_filepath, send_file_for_download
 
 
 class LLR(Resource):
@@ -56,7 +56,7 @@ class LLR(Resource):
             )
             if not is_successful:
                 return stderr_out, 400
-            return send_file_for_download(filepath=output_filepath, filename="maveLLR.csv")
 
+            return send_file_for_download(output_filepath, filename="maveLLR.csv")
         finally:
-            rm_files([benchmark_filepath, score_filepath, output_filepath])
+            rm_files(filepaths=[benchmark_filepath, score_filepath, output_filepath])
