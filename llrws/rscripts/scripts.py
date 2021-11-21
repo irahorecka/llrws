@@ -5,7 +5,7 @@ RSCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def execute_maveLLR_script(benchmark_filepath, score_filepath, download_filepath):
-    """Executes mave.r and writes unique output file to download_filepath.
+    """Executes mave.r and writes output CSV file to download_filepath.
 
     Args:
         benchmark_filepath (str): Path to benchmark CSV file
@@ -17,6 +17,8 @@ def execute_maveLLR_script(benchmark_filepath, score_filepath, download_filepath
         (str): StdError of StdOut if failure or success, respectively
     """
     mave_rscript_filepath = os.path.join(RSCRIPTS_DIR, "mave.r")
+    # At this point, nearly *all* data validation should be complete for benchmark_filepath
+    # and score_filepath.
     rscript_call = [
         "Rscript",
         mave_rscript_filepath,
@@ -24,8 +26,7 @@ def execute_maveLLR_script(benchmark_filepath, score_filepath, download_filepath
         f"--score={score_filepath}",
         f"--download={download_filepath}",
     ]
-    # At this point, nearly *all* data validation should be complete for benchmark_filepath
-    # and score_filepath.
+    # Output CSV file is written to disk in mave.r if execution is successful.
     result, return_code = execute_subprocess(rscript_call)
     # Non-zero exit code - indicate error and return stderr to caller.
     if return_code != 0:
