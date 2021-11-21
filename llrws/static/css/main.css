@@ -62,8 +62,24 @@ pre code h3 {
     text-align: right;
 }
 
-#llrws .page-link:hover {
+.page-link:hover {
     border: 1px solid;
+}
+
+@media screen and (max-width: 764px) {
+    #llrws div.dataTables_filter label {
+        text-align: left;
+    }
+
+    li.paginate_button.previous {
+        display: inline;
+    }
+    li.paginate_button.next {
+        display: inline;
+    }
+    li.paginate_button {
+        display: none;
+    }
 }
 
 /*===== END Main =====*/
