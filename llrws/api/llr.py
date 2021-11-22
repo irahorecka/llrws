@@ -6,7 +6,7 @@ from flask_restful import Resource, reqparse
 import werkzeug
 
 from llrws.rscripts import execute_maveLLR_script
-from llrws.web_utils import rm_files, save_fileobj_to_filepath, send_file_for_download
+from llrws.web_utils import rm_files, send_file_for_download, validate_fileobj
 
 
 class LLR(Resource):
@@ -36,19 +36,17 @@ class LLR(Resource):
         try:
             # Validate and save benchmark CSV file.
             benchmark_file = args["benchmark_file"]
-            is_file_saved, error_msg = save_fileobj_to_filepath(
-                benchmark_file, benchmark_filepath, file_descriptor="MAVE benchmark CSV"
-            )
-            if not is_file_saved:
+            is_file_valid, error_msg = validate_fileobj(benchmark_file, file_descriptor="MAVE benchmark CSV")
+            if not is_file_valid:
                 return error_msg, 400
+            benchmark_file.save(benchmark_filepath)
 
             # Validate and save score CSV file.
             score_file = args["score_file"]
-            is_file_saved, error_msg = save_fileobj_to_filepath(
-                score_file, score_filepath, file_descriptor="MAVE score CSV"
-            )
-            if not is_file_saved:
+            is_file_valid, error_msg = validate_fileobj(score_file, file_descriptor="MAVE score CSV")
+            if not is_file_valid:
                 return error_msg, 400
+            score_file.save(score_filepath)
 
             # Execute R script ../rscripts/mave.r via Python wrapper scripts.execute_maveLLR_script.
             # error_msg is either stderr or stdout and is conditional to failure or success, respectively.

@@ -4,27 +4,6 @@ from flask import current_app, send_file
 from werkzeug.utils import secure_filename
 
 
-def save_fileobj_to_filepath(fileobj, filepath, file_descriptor):
-    """Validates then saves fileobj to filepath if validation is successful.
-    Descriptive error is returned if validation fails.
-
-    Args:
-        fileobj (werkzeug.datastructures.FileStorage): FileStorage instance of a file
-        filepath (str): File path to save fileobj
-        file_descriptor (str): Description of file
-
-    Returns:
-        (bool): Indicative of validation success (True) or failure (False)
-        (str): "" or error message if validation success or failure, respectively
-    """
-    is_valid, error_msg = validate_fileobj(fileobj, file_descriptor)
-    if not is_valid:
-        return False, error_msg
-    # Save file if validation is successful
-    fileobj.save(filepath)
-    return True, ""
-
-
 def validate_fileobj(fileobj, file_descriptor):
     """Validates fileobj. Descriptive error is returned if validation fails.
 

@@ -18,8 +18,10 @@ def create_app(config_class=Config):
     application.config.from_object(config_class)
 
     from llrws.main.routes import main
+    from llrws.errors.handlers import errors
 
     application.register_blueprint(main)
+    application.register_blueprint(errors)
 
     # Register RESTful API
     from llrws.api.routes import api_bp
