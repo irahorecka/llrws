@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
 {% block content %}
+  <div id="mave-button-submit">
+    <button type="button" class="btn btn-primary" onclick="this.blur();">Get MAVE</button>
+  </div>
   <table id="data" class="display compact table table-striped" width="100%">
     <thead>
       <tr>
@@ -18,31 +21,5 @@
   </table>
 {% endblock %}
 {% block scripts %}
-  <script>
-    $(document).ready(function () {
-      var table = $('#data').DataTable({
-        ajax: '/data',
-        columns: [
-          {data: 'hgvs_pro'},
-          {data: 'score', searchable: false},
-          {data: 'sd', searchable: false},
-          {data: 'se', searchable: false},
-          {data: 'llr', searchable: false},
-          {data: 'llrCIlower', searchable: false},
-          {data: 'llrCIupper', searchable: false},
-        ],
-        initComplete: function(settings, json) {
-          $("html, body").animate({ scrollTop: document.body.scrollHeight }, "slow");
-        },
-        language: {searchPlaceholder: "Search HGVS Pro"},
-        lengthMenu: [[50, 100, 250, -1], [50, 100, 250, "All"]],
-        pageLength: 50,
-        scrollX: true,
-        scrollY: "500px",
-        scroller: true,
-        scrollCollapse: true,
-      });
-      table.columns.adjust();
-    });
-  </script>
+  <script src="{{ url_for('static', filename='js/maveDataTable.js') }}"></script>
 {% endblock %}

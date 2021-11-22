@@ -32,7 +32,9 @@
   </header>
   <main>
     <div class="container">
-      <img src="{{ url_for('static', filename='images/roth-lab-font.png') }}" alt="Roth Lab" class="roth-lab-font">
+      <div class="roth-lab-font">
+        <img src="{{ url_for('static', filename='images/roth-lab-font.png') }}" alt="Roth Lab">
+      </div>
       {%- block content -%}{%- endblock -%}
     </div>
   </main>
