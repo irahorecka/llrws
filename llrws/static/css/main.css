@@ -30,6 +30,7 @@ body {
 .dropzone-container {
     display: flex;
     justify-content: space-between;
+    padding-bottom: 1rem;
 }
 
 .dropzone {
@@ -38,6 +39,10 @@ body {
     border-image: none;
     margin-left: auto;
     margin-right: auto;
+}
+
+.dz-message {
+    font-size: 1.2rem;
 }
 
 #mave-button-submit {

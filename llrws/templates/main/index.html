@@ -5,13 +5,11 @@
     <div class="col">
       <form id="mave-csv-upload" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
         <div class="dz-message needsclick">
-          Drop files here or click to upload.<br>
-          <span class="note needsclick">(This is just a demo dropzone. Selected
-          files are <strong>not</strong> actually uploaded.)</span>
+          Drop <strong>Benchmark CSV</strong> and <strong>Score CSV</strong> files here or click to upload.
         </div>
       </form>
       <div id="mave-button-submit">
-        <input type="submit" id="mave-csv-upload" value="Get MAVE" hx-get="/data" hx-trigger="click" class="btn btn-primary" onclick="this.blur();"></input>
+        <input type="submit" value="Get MAVE" class="btn btn-primary" onclick="this.blur();"></input>
       </div>
     </div>
   </div>
