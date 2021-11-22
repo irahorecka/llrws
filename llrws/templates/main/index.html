@@ -31,6 +31,9 @@
           {data: 'llrCIlower', searchable: false},
           {data: 'llrCIupper', searchable: false},
         ],
+        initComplete: function(settings, json) {
+          $("html, body").animate({ scrollTop: document.body.scrollHeight }, "slow");
+        },
         lengthMenu: [[50, 100, 250, -1], [50, 100, 250, "All"]],
         pageLength: 50,
         scrollX: true,

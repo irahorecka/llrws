@@ -7,8 +7,10 @@ Flask blueprint to handle routes.
 
 import os
 import csv
+from io import StringIO
 
-from flask import render_template, Blueprint
+import requests
+from flask import render_template, url_for, Blueprint
 
 main = Blueprint("main", __name__)
 
@@ -25,9 +27,18 @@ def index():
 @main.route("/data")
 def data():
     """AJAX: Load CSV data when called."""
-    var_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test.csv")
-    with open(var_file) as f:
-        var_csv = [i for i in csv.DictReader(f)]
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    # In the future these will be user input files
+    benchmark_file = os.path.join(file_dir, "CALM123_jointReference.csv")
+    score_file = os.path.join(file_dir, "CALM1_full_imputation_refined_mavedb.csv")
+
+    files = {
+        "benchmark_file": open(benchmark_file, "rb"),
+        "score_file": open(score_file, "rb"),
+    }
+    response = requests.post(url_for("api.api_base", _external=True), files=files)
+    var_csv = [i for i in csv.DictReader(StringIO(response.content.decode("utf-8")))]
+
     return {"data": var_csv}
 
 
