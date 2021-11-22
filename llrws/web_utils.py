@@ -4,7 +4,7 @@ from flask import current_app, send_file
 from werkzeug.utils import secure_filename
 
 
-def save_fileobj_to_filepath(fileobj, filepath, file_descriptor="unknown"):
+def save_fileobj_to_filepath(fileobj, filepath, file_descriptor):
     """Validates then saves fileobj to filepath if validation is successful.
     Descriptive error is returned if validation fails.
 
