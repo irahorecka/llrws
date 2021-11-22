@@ -45,6 +45,10 @@ body {
     font-size: 1.2rem;
 }
 
+.dz-error-message {
+    margin-top: 1.5rem;
+}
+
 #mave-button-submit {
     display: flex;
     justify-content: right;
