@@ -39,7 +39,7 @@ def save_fileobj_to_filepath(fileobj, filepath, file_descriptor="unknown"):
     return True, error_msg
 
 
-def send_file_for_download(filepath, filename):
+def send_file_for_download(filepath, filename, mimetype="text/csv"):
     """Sends a file for download to caller.
 
     Args:
@@ -51,6 +51,7 @@ def send_file_for_download(filepath, filename):
     """
     worklist = send_file(
         filepath,
+        mimetype=mimetype,
         as_attachment=True,
         attachment_filename=filename,
         cache_timeout=-1,

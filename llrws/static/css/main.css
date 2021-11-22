@@ -21,6 +21,12 @@ body {
     font-size: 24px;
 }
 
+.roth-lab-font {
+    display: block;
+    margin: auto;
+    margin-bottom: 6rem;
+}
+
 main {
     text-align: var(--default-align);
     max-width: var(--default-max-width);

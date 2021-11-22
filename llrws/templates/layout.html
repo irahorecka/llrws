@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/latolatinfonts.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  <link class="img-fluid rounded-circle float-left mr-2" rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/personalis.png') }}">
+  <link class="img-fluid rounded-circle float-left mr-2" rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/favicon.ico') }}">
   <script src="{{ url_for('static', filename="external/jquery-3.6.0.min.js") }}"></script>
   <script src="{{ url_for('static', filename="external/bootstrap-5.0.2/js/bootstrap.min.js") }}"></script>
   <title>{{ content.title }}</title>
@@ -25,11 +25,12 @@
   <header>
       <nav>
         <div class="nav-left"><a href="{{ url_for('main.index') }}"><i id="home" class="fa fa-home" aria-hidden="true" title="Home"></i></a></div>
-        <div class="nav-right"><a href="{{ url_for('main.settings') }}"><i id="settings" class="fa fa-cogs" aria-hidden="true" title="Settings"></i></a></div>
+        <div class="nav-right"><a href="mailto:ira89@icloud.com"><i id="settings" class="fa fa-envelope" aria-hidden="true" title="Mail: ira89@icloud.com"></i></a></div>
       </nav>
   </header>
   <main>
     <div class="container">
+      <img src="{{ url_for('static', filename='images/roth-lab-font.png') }}" alt="Roth Lab" class="roth-lab-font">
       {%- block content -%}{%- endblock -%}
     </div>
   </main>

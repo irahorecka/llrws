@@ -4,13 +4,13 @@
   <table id="data" class="display compact table table-striped" width="100%">
     <thead>
       <tr>
-        <th>hgvs_pro</th>
-        <th>score</th>
-        <th>sd</th>
-        <th>se</th>
-        <th>llr</th>
-        <th>llrCIlower</th>
-        <th>llrCIupper</th>
+        <th>HGVS Pro</th>
+        <th>Score</th>
+        <th>STDDEV</th>
+        <th>STDERR</th>
+        <th>LLR</th>
+        <th>LLR Lower CI</th>
+        <th>LLR Upper CI</th>
       </tr>
     </thead>
     <tbody>
@@ -20,7 +20,7 @@
 {% block scripts %}
   <script>
     $(document).ready(function () {
-      $('#data').DataTable({
+      var table = $('#data').DataTable({
         ajax: '/data',
         columns: [
           {data: 'hgvs_pro'},
@@ -31,10 +31,14 @@
           {data: 'llrCIlower', searchable: false},
           {data: 'llrCIupper', searchable: false},
         ],
+        lengthMenu: [[50, 100, 250, -1], [50, 100, 250, "All"]],
         pageLength: 50,
+        scrollX: true,
         scrollY: "500px",
         scrollCollapse: true,
+        scroller: true,
       });
+      table.columns.adjust();
     });
   </script>
 {% endblock %}
