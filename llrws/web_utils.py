@@ -36,7 +36,7 @@ def validate_fileobj(fileobj, file_descriptor):
         (bool): Indicative of validation success (True) or failure (False)
         (str): "" or error message if validation success or failure, respectively
     """
-    # Validate fileobj
+    # Validate fileobj instance
     if fileobj is None:
         error_msg = f"Missing {file_descriptor} file."
         return False, error_msg
