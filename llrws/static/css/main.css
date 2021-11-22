@@ -21,15 +21,32 @@ body {
     font-size: 24px;
 }
 
-#mave-button-submit {
-    display: flex;
-    justify-content: right;
-    padding-bottom: 2rem;
-}
 .roth-lab-font {
     display: flex;
     justify-content: center;
     padding-bottom: 6rem;
+}
+
+.dropzone-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropzone {
+    border-radius: 5px;
+    border: 2px dashed rgb(0, 135, 247);
+    border-image: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#mave-button-submit {
+    display: flex;
+    justify-content: right;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+    margin: auto;
+    max-width: 100px;
 }
 
 main {
