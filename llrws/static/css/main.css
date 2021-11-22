@@ -49,6 +49,11 @@ body {
     margin-top: 1.5rem;
 }
 
+.dropzone .dz-preview .dz-success-mark, .dropzone .dz-preview .dz-error-mark {
+    /* Center success or failure icon over image of file - offset by 'Remove file' hyperlink. */
+    top: 43%;
+}
+
 #mave-button-submit {
     display: flex;
     justify-content: right;
