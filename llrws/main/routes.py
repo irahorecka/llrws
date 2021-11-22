@@ -10,7 +10,7 @@ import csv
 from io import StringIO
 
 import requests
-from flask import render_template, url_for, Blueprint
+from flask import render_template, request, url_for, Blueprint
 
 main = Blueprint("main", __name__)
 
@@ -22,6 +22,14 @@ def index():
         "title": "Home | LLRWS",
     }
     return render_template("main/index.html", content=content)
+
+
+@main.route("/upload", methods=["POST"])
+def upload():
+    """Demo upload validation for files."""
+    uploaded_file = request.files["file"]
+    print(uploaded_file)
+    return "Success", 200
 
 
 @main.route("/data")
