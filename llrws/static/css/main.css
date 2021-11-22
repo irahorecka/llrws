@@ -21,10 +21,15 @@ body {
     font-size: 24px;
 }
 
+#mave-button-submit {
+    display: flex;
+    justify-content: right;
+    padding-bottom: 2rem;
+}
 .roth-lab-font {
-    display: block;
-    margin: auto;
-    margin-bottom: 6rem;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 6rem;
 }
 
 main {
