@@ -1,8 +1,19 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <div id="mave-button-submit">
-    <button type="button" class="btn btn-primary" onclick="this.blur();">Get MAVE</button>
+  <div class="row dropzone-container">
+    <div class="col">
+      <form id="mave-csv-upload" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
+        <div class="dz-message needsclick">
+          Drop files here or click to upload.<br>
+          <span class="note needsclick">(This is just a demo dropzone. Selected
+          files are <strong>not</strong> actually uploaded.)</span>
+        </div>
+      </form>
+      <div id="mave-button-submit">
+        <input type="submit" id="mave-csv-upload" value="Get MAVE" hx-get="/data" hx-trigger="click" class="btn btn-primary" onclick="this.blur();"></input>
+      </div>
+    </div>
   </div>
   <table id="data" class="display compact table table-striped" width="100%">
     <thead>
@@ -19,6 +30,7 @@
     <tbody>
     </tbody>
   </table>
+  {% include 'main/includes/dropzone-footer.html' %}
 {% endblock %}
 {% block scripts %}
   <script src="{{ url_for('static', filename='js/maveDataTable.js') }}"></script>
