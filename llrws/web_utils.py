@@ -5,8 +5,8 @@ from werkzeug.utils import secure_filename
 
 
 def save_fileobj_to_filepath(fileobj, filepath, file_descriptor="unknown"):
-    """Validates then saves fileobj to filepath. Descriptive error is returned if
-    validation fails.
+    """Validates then saves fileobj to filepath if validation is successful.
+    Descriptive error is returned if validation fails.
 
     Args:
         fileobj (werkzeug.datastructures.FileStorage): FileStorage instance of a file
@@ -17,13 +17,30 @@ def save_fileobj_to_filepath(fileobj, filepath, file_descriptor="unknown"):
         (bool): Indicative of validation success (True) or failure (False)
         (str): "" or error message if validation success or failure, respectively
     """
-    error_msg = ""
+    is_valid, error_msg = validate_fileobj(fileobj, file_descriptor)
+    if not is_valid:
+        return False, error_msg
+    # Save file if validation is successful
+    fileobj.save(filepath)
+    return True, ""
 
+
+def validate_fileobj(fileobj, file_descriptor):
+    """Validates fileobj. Descriptive error is returned if validation fails.
+
+    Args:
+        fileobj (werkzeug.datastructures.FileStorage): FileStorage instance of a file
+        file_descriptor (str): Description of file
+
+    Returns:
+        (bool): Indicative of validation success (True) or failure (False)
+        (str): "" or error message if validation success or failure, respectively
+    """
     # Validate fileobj
     if fileobj is None:
         error_msg = f"Missing {file_descriptor} file."
         return False, error_msg
-    # Convert fileobj.filename to secure filename before evaluating.
+    # Convert fileobj.filename to secure filename before evaluating filename.
     filename = secure_filename(fileobj.filename)
     if not bool(filename):
         error_msg = f"Missing {file_descriptor} file."
@@ -34,9 +51,7 @@ def save_fileobj_to_filepath(fileobj, filepath, file_descriptor="unknown"):
         error_msg = f"{file_descriptor} file does not have one of the allowed extensions: {' '.join(current_app.config['UPLOAD_EXTENSIONS'])}"
         return False, error_msg
 
-    # Save file
-    fileobj.save(filepath)
-    return True, error_msg
+    return True, ""
 
 
 def send_file_for_download(filepath, filename, mimetype="text/csv"):

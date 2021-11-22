@@ -14,4 +14,5 @@ api_bp = Blueprint("api", __name__)
 
 
 def initialize_routes(api):
+    """Initialize API routes."""
     api.add_resource(LLR, "/", endpoint="api_base")
