@@ -17,7 +17,6 @@
   <link class="img-fluid rounded-circle float-left mr-2" rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/favicon.ico') }}">
   <script src="{{ url_for('static', filename="external/jquery-3.6.0.min.js") }}"></script>
   <script src="{{ url_for('static', filename="external/bootstrap-5.0.2/js/bootstrap.min.js") }}"></script>
-  <script src="{{ url_for('static', filename="external/dropzone-5.7.1/dropzone.min.js") }}"></script>
   <!-- <script src="{{ url_for('static', filename="external/htmx-1.5.0.min.js") }}"></script> -->
   <title>{{ content.title }}</title>
 </head>
@@ -43,8 +42,6 @@
       <small>The Roth Lab Team</small>
     </p>
   </footer>
-  <script src="{{ url_for('static', filename='external/DataTables-1.11.3/js/jquery.dataTables.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='external/DataTables-1.11.3/js/dataTables.bootstrap5.min.js') }}"></script>
   {%- block scripts -%}{%- endblock -%}
 </body>
 </html>
