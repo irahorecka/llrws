@@ -34,12 +34,13 @@
         initComplete: function(settings, json) {
           $("html, body").animate({ scrollTop: document.body.scrollHeight }, "slow");
         },
+        language: {searchPlaceholder: "Search HGVS Pro"},
         lengthMenu: [[50, 100, 250, -1], [50, 100, 250, "All"]],
         pageLength: 50,
         scrollX: true,
         scrollY: "500px",
-        scrollCollapse: true,
         scroller: true,
+        scrollCollapse: true,
       });
       table.columns.adjust();
     });

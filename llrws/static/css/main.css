@@ -34,6 +34,10 @@ main {
     padding-top: 1rem;
 }
 
+nav {
+    align-content: flex-end;
+    justify-content: flex-end;
+}
 nav,
 input {
     height: 100%;
