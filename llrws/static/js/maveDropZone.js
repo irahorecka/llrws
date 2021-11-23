@@ -1,6 +1,7 @@
 Dropzone.autoDiscover = false;
 $(".dropzone").dropzone({
     addRemoveLinks: true,
+    maxFiles: 1,
     removedfile: function(file) {
         var name = file.name;
         $.ajax({

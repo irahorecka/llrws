@@ -12,7 +12,7 @@ from io import StringIO
 import requests
 from flask import render_template, request, url_for, Blueprint
 
-from llrws.web_utils import validate_fileobj
+from llrws.utils.web import validate_file_properties
 
 main = Blueprint("main", __name__)
 
@@ -34,7 +34,7 @@ def upload():
     except KeyError:
         # Usually raised when user deletes file from dropzone.
         return "No file", 200
-    is_file_valid, error_msg = validate_fileobj(uploaded_file, file_descriptor="Uploaded")
+    is_file_valid, error_msg = validate_file_properties(uploaded_file, file_descriptor="Uploaded")
     if not is_file_valid:
         return error_msg, 400
     return "Success", 200
