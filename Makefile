@@ -3,7 +3,7 @@ black: ## Black format every python file to line length 100
 	find . -type f -name "*.py" | xargs absolufy-imports;
 	make clean;
 
-flake: ## Flake8 every python file
+flake8: ## Flake8 every python file
 	find . -type f -name "*.py" -a | xargs flake8;
 
 pylint: ## Pylint every python file
