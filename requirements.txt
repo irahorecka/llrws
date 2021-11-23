@@ -1,6 +1,8 @@
 # Web Service requirements
 flask
 flask-restful
+pandas
+pandera
 # Developer tools requirements
 absolufy-imports
 black
