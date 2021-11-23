@@ -1,41 +1,9 @@
-import os
 import warnings
 
 warnings.simplefilter(action="ignore", category=UserWarning)
 
-from flask import current_app
-from werkzeug.utils import secure_filename
 import pandas as pd
 import pandera as pa
-
-
-def validate_file_properties(fileobj, file_descriptor):
-    """Validates fileobj. Descriptive error is returned if validation fails.
-
-    Args:
-        fileobj (werkzeug.datastructures.FileStorage): FileStorage instance of a file
-        file_descriptor (str): Description of file
-
-    Returns:
-        (bool): Indicative of validation success (True) or failure (False)
-        (str): "" or error message if validation success or failure, respectively
-    """
-    # Validate fileobj instance
-    if fileobj is None:
-        error_msg = f"Missing {file_descriptor}."
-        return False, error_msg
-    # Convert fileobj.filename to secure filename before evaluating filename.
-    filename = secure_filename(fileobj.filename)
-    if not bool(filename):
-        error_msg = f"Missing {file_descriptor}."
-        return False, error_msg
-    # Validate file extension
-    fileext = os.path.splitext(filename)[1]
-    if fileext.lower() not in current_app.config["UPLOAD_EXTENSIONS"]:
-        error_msg = f"{file_descriptor} does not have one of the allowed extensions: {' '.join(current_app.config['UPLOAD_EXTENSIONS'])}"
-        return False, error_msg
-
-    return True, ""
 
 
 def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
@@ -63,7 +31,7 @@ def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
 
 
 def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benchmark file"):
-    """Validates benchmark Pandas DataFrame for data content pertaining to MAVE benchmark files.
+    """Validates Pandas DataFrame with data content from MAVE benchmark file.
 
     Args:
         benchmark_csv_filepath (str): File path to MAVE benchmark CSV file
@@ -96,7 +64,7 @@ def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benc
 
 
 def validate_score_schema(score_csv_filepath, file_descriptor="MAVE score file"):
-    """Validates score Pandas DataFrame for data content pertaining to MAVE score files.
+    """Validates Pandas DataFrame with data content from MAVE score file.
 
     Args:
         score_csv_filepath (str): File path to MAVE benchmark CSV file

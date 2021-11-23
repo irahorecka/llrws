@@ -12,7 +12,8 @@ from io import StringIO
 import requests
 from flask import render_template, request, url_for, Blueprint
 
-from llrws.utils.web import validate_file_properties
+from llrws.tools.mave import sort_flat_mave_csv
+from llrws.tools.web import validate_file_properties
 
 main = Blueprint("main", __name__)
 
@@ -53,9 +54,9 @@ def data():
         "score_file": open(score_file, "rb"),
     }
     response = requests.post(url_for("api.api_base", _external=True), files=files)
-    var_csv = [i for i in csv.DictReader(StringIO(response.content.decode("utf-8")))]
+    flat_mave_csv = sort_flat_mave_csv([i for i in csv.DictReader(StringIO(response.content.decode("utf-8")))])
 
     # Just load written input file to avoid post calls every time a page refresh is invoked.
-    # var_csv = [i for i in csv.DictReader(open(os.path.join(file_dir, "test.csv")))]
+    # flat_mave_csv = [i for i in csv.DictReader(open(os.path.join(file_dir, "test.csv")))]
 
-    return {"data": var_csv}
+    return {"data": flat_mave_csv}

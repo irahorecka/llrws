@@ -5,14 +5,9 @@ from flask import current_app
 from flask_restful import Resource, reqparse
 import werkzeug
 
-from llrws.utils.rscripts import execute_maveLLR_script
-from llrws.utils.web import (
-    rm_files,
-    send_file_for_download,
-    validate_file_properties,
-    validate_benchmark_schema,
-    validate_score_schema,
-)
+from llrws.tools.mave import validate_benchmark_schema, validate_score_schema
+from llrws.tools.rscripts import execute_maveLLR_script
+from llrws.tools.web import rm_files, send_file_for_download, validate_file_properties
 
 
 class LLR(Resource):
@@ -37,26 +32,26 @@ class LLR(Resource):
         try:
             # Validate and save benchmark CSV file.
             benchmark_file = args["benchmark_file"]
-            is_benchmark_file_valid, error_msg = self._validate_and_save_csv_file(
+            is_valid_benchmark_file, error_msg = self._validate_and_save_csv_file(
                 benchmark_file,
                 benchmark_filepath,
                 file_descriptor="MAVE benchmark CSV",
                 schema_validator=validate_benchmark_schema,
             )
-            if not is_benchmark_file_valid:
-                error_msg = f"{error_msg}. Please verify your MAVE benchmark file and try again."
+            if not is_valid_benchmark_file:
+                error_msg = f"{error_msg}. Please verify your MAVE benchmark CSV file and try again."
                 return error_msg, 400
 
             # Validate and save score CSV file.
             score_file = args["score_file"]
-            is_score_file_valid, error_msg = self._validate_and_save_csv_file(
+            is_valid_score_file, error_msg = self._validate_and_save_csv_file(
                 score_file,
                 score_filepath,
                 file_descriptor="MAVE score CSV",
                 schema_validator=validate_score_schema,
             )
-            if not is_score_file_valid:
-                error_msg = f"{error_msg}. Please verify your MAVE score file and try again."
+            if not is_valid_score_file:
+                error_msg = f"{error_msg}. Please verify your MAVE score CSV file and try again."
                 return error_msg, 400
 
             # Execute R script ../rscripts/mave.r via Python wrapper scripts.execute_maveLLR_script.

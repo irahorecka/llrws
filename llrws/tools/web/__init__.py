@@ -1,4 +1,8 @@
+import os
+
 from flask import send_file
+
+from llrws.tools.web.validation import validate_file_properties
 
 
 def send_file_for_download(filepath, filename, mimetype="text/csv"):
@@ -22,3 +26,22 @@ def send_file_for_download(filepath, filename, mimetype="text/csv"):
     worklist.headers["Access-Control-Expose-Headers"] = "x-filename"
 
     return worklist
+
+
+def rm_files(filepaths):
+    """Exhaustively removes files in an iterable of file paths.
+
+    Args:
+        filepaths (iter[(str)]): An iterable of file paths to be removed
+
+    Returns:
+        (None)
+    """
+    # Check if filepaths in an iterable container.
+    if not isinstance(filepaths, (dict, list, set, tuple)):
+        filepaths = [filepaths]
+    for file in filepaths:
+        try:
+            os.remove(file)
+        except FileNotFoundError:
+            pass
