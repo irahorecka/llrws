@@ -59,6 +59,7 @@ $(document).ready(function() {
 			scrollY: "500px",
 			scroller: true,
 			scrollCollapse: true,
+			sorting: false,
 		});
 		table.columns.adjust();
 	});
