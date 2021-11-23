@@ -38,12 +38,12 @@ def validate_file_properties(fileobj, file_descriptor):
     return True, ""
 
 
-def validate_benchmark_or_score_csv_file(csv_filepath, file_descriptor):
-    """Validates CSV for data content pertaining to MAVE benchmark or score files.
+def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
+    """Validates CSV for data content schema pertaining to MAVE benchmark or score files.
     Descriptive error is returned if validation fails.
 
     Args:
-        csv_filepath (str): File path to CSV file
+        csv_filepath (str): File path to MAVE benchmark or score CSV file
         file_descriptor (str): Description of file to concatenate to error message if error thrown
 
     Returns:
@@ -51,28 +51,26 @@ def validate_benchmark_or_score_csv_file(csv_filepath, file_descriptor):
         (str): CSV filetype (i.e. "score" or "benchmark") or "" if filetype detected or not, respectively
         (str): "" or error message if validation success or failure, respectively
     """
-    mave_df = pd.read_csv(csv_filepath)
-    try:
-        validate_benchmark_schema(mave_df)
+    is_valid_benchmark_schema, _ = validate_benchmark_schema(csv_filepath)
+    if is_valid_benchmark_schema:
         return True, "benchmark", ""
 
-    except pa.errors.SchemaError:
-        try:
-            validate_score_schema(mave_df)
-            return True, "score", ""
+    is_valid_score_schema, error_msg = validate_score_schema(csv_filepath)
+    if is_valid_score_schema:
+        return True, "score", ""
 
-        except pa.errors.SchemaError as e:
-            return False, "", f"{file_descriptor} encountered the following problem: {e}"
+    return False, "", f"{file_descriptor} encountered the following problem: {error_msg}"
 
 
-def validate_benchmark_schema(mave_df):
+def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benchmark file"):
     """Validates benchmark Pandas DataFrame for data content pertaining to MAVE benchmark files.
 
     Args:
-        mave_df (pandas.core.frame.DataFrame): A MAVE DataFrame object
+        benchmark_csv_filepath (str): File path to MAVE benchmark CSV file
 
     Returns:
-        (None)
+        (bool): Indicative of validation success (True) or failure (False)
+        (str): "" or error message if validation success or failure, respectively
     """
     benchmark_schema = pa.DataFrameSchema(
         {
@@ -88,18 +86,24 @@ def validate_benchmark_schema(mave_df):
         strict=True,
         coerce=True,
     )
-    # Attempt benchmark schema validation - raise pa.errors.SchemaError if validation fails.
-    benchmark_schema(mave_df)
+    benchmark_df = pd.read_csv(benchmark_csv_filepath)
+    try:
+        # Attempt benchmark schema validation
+        benchmark_schema(benchmark_df)
+        return True, ""
+    except pa.errors.SchemaError as e:
+        return False, f"{file_descriptor} validation encountered the following problem: {e}"
 
 
-def validate_score_schema(mave_df):
+def validate_score_schema(score_csv_filepath, file_descriptor="MAVE score file"):
     """Validates score Pandas DataFrame for data content pertaining to MAVE score files.
 
     Args:
-        mave_df (pandas.core.frame.DataFrame): A MAVE DataFrame object
+        score_csv_filepath (str): File path to MAVE benchmark CSV file
 
     Returns:
-        (None)
+        (bool): Indicative of validation success (True) or failure (False)
+        (str): "" or error message if validation success or failure, respectively
     """
     score_schema = pa.DataFrameSchema(
         {
@@ -112,5 +116,10 @@ def validate_score_schema(mave_df):
         strict=True,
         coerce=True,
     )
-    # Attempt score schema validation - raise pa.errors.SchemaError if validation fails.
-    score_schema(mave_df)
+    score_df = pd.read_csv(score_csv_filepath)
+    try:
+        # Attempt score schema validation
+        score_schema(score_df)
+        return True, ""
+    except pa.errors.SchemaError as e:
+        return False, f"{file_descriptor} validation encountered the following problem: {e}"
