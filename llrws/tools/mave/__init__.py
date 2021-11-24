@@ -11,9 +11,10 @@ from llrws.tools.mave.validation import (
 )
 
 
-def generate_mave_csv_filepaths():
+def generate_mave_csv_filepaths(session_id=None):
     # Declare upload benchmark, score, and output maveLLR-processed CSV filepaths.
-    session_id = uuid4()
+    if session_id is None:
+        session_id = uuid4()
     return {
         "benchmark": os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-benchmark.csv"),
         "score": os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-score.csv"),
