@@ -1,5 +1,6 @@
 # Web Service requirements
 flask
+flask-cors
 flask-restful
 pandas
 pandera
