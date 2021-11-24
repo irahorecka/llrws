@@ -54,7 +54,7 @@ def data():
         "score_file": open(score_file, "rb"),
     }
     response = requests.post(url_for("api.api_base", _external=True), files=files)
-    flat_mave_csv = sort_flat_mave_csv([i for i in csv.DictReader(StringIO(response.content.decode("utf-8")))])
+    flat_mave_csv = sort_flat_mave_csv(iter(csv.DictReader(StringIO(response.content.decode("utf-8")))))
 
     # Just load written input file to avoid post calls every time a page refresh is invoked.
     # flat_mave_csv = [i for i in csv.DictReader(open(os.path.join(file_dir, "test.csv")))]
