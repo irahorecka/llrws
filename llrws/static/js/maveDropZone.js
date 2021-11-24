@@ -14,7 +14,6 @@ $(".dropzone").dropzone({
     },
     init: function() {
         // Get intance of Dropzone object
-        var maveCSVDropzone = Dropzone.forElement(".dropzone");
         function invoke_blue_border() {
             invoke_border_color('rgb(0, 135, 247)');
         }
@@ -39,6 +38,7 @@ $(".dropzone").dropzone({
                     invoke_red_border();
                 }
             });
+            var maveCSVDropzone = Dropzone.forElement(".dropzone");
             // No more files in Dropzone instance
             if (maveCSVDropzone.files.length == 0) {
                 invoke_blue_border();
