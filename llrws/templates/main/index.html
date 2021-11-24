@@ -3,13 +3,13 @@
 {% block content %}
   <div class="row dropzone-container">
     <div class="col">
-      <form id="mave-csv-upload" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
+      <form id="mave-upload-csv" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
         <div class="dz-message needsclick">
           Drop <strong>Benchmark CSV</strong> and <strong>Score CSV</strong> files here or click to upload.
         </div>
       </form>
       <div class="mave-button-wrapper">
-        <input id="mave-button-submit" type="submit" value="Get MAVE" class="btn btn-primary" onclick="this.blur();"></input>
+        <input id="mave-button-submit" type="submit" value="Get MAVE" class="btn btn-primary" onclick="this.blur();" disabled></input>
       </div>
     </div>
   </div>
