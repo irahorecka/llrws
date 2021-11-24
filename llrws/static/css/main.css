@@ -54,7 +54,7 @@ body {
     top: 43%;
 }
 
-#mave-button-submit {
+.mave-button-wrapper {
     display: flex;
     justify-content: right;
     padding-top: 1rem;
