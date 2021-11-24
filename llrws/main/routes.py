@@ -12,8 +12,8 @@ from io import StringIO
 import requests
 from flask import render_template, request, url_for, Blueprint
 
-from llrws.tools.mave import sort_flat_mave_csv
-from llrws.tools.web import validate_file_properties
+from llrws.tools.mave import generate_mave_csv_filepaths, sort_flat_mave_csv, validate_benchmark_or_score_schema
+from llrws.tools.web import rm_files, validate_file_properties
 
 main = Blueprint("main", __name__)
 
@@ -31,14 +31,29 @@ def index():
 def upload():
     """Demo upload validation for CSV files."""
     try:
-        uploaded_file = request.files["file"]
+        upload_file = request.files["file"]
     except KeyError:
         # Usually raised when user deletes file from dropzone.
         return "No file", 200
-    is_file_valid, error_msg = validate_file_properties(uploaded_file, file_descriptor="Uploaded")
-    if not is_file_valid:
+
+    # Check if the general file properties are valid...
+    is_valid_file, error_msg = validate_file_properties(upload_file, file_descriptor="Uploaded file")
+    if not is_valid_file:
         return error_msg, 400
-    return "Success", 200
+
+    # ... then check if the CSV content is valid.
+    upload_filepath = generate_mave_csv_filepaths()["misc"]
+    try:
+        upload_file.save(upload_filepath)
+        is_valid_csv, _, error_msg = validate_benchmark_or_score_schema(
+            upload_filepath, file_descriptor="Uploaded file"
+        )
+        if not is_valid_csv:
+            return error_msg, 400
+
+        return "Success", 200
+    finally:
+        rm_files(upload_filepath)
 
 
 @main.route("/data")

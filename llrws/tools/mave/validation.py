@@ -28,7 +28,7 @@ def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
     if is_valid_score_schema:
         return True, "score", ""
 
-    return False, "", f"Error with {file_descriptor}: Neither benchmark nor score CSV"
+    return False, "", f"{file_descriptor} is neither a benchmark nor score CSV"
 
 
 def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benchmark file"):
@@ -55,12 +55,12 @@ def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benc
         strict=True,
         coerce=True,
     )
-    benchmark_df = pd.read_csv(benchmark_csv_filepath)
     try:
+        benchmark_df = pd.read_csv(benchmark_csv_filepath)
         # Attempt benchmark schema validation
         benchmark_schema(benchmark_df)
         return True, ""
-    except pa.errors.SchemaError as e:
+    except (pd.errors.ParserError, pa.errors.SchemaError) as e:
         return False, f"{file_descriptor} validation encountered the following problem: {e}"
 
 
@@ -85,10 +85,10 @@ def validate_score_schema(score_csv_filepath, file_descriptor="MAVE score file")
         strict=True,
         coerce=True,
     )
-    score_df = pd.read_csv(score_csv_filepath)
     try:
+        score_df = pd.read_csv(score_csv_filepath)
         # Attempt score schema validation
         score_schema(score_df)
         return True, ""
-    except pa.errors.SchemaError as e:
+    except (pd.errors.ParserError, pa.errors.SchemaError) as e:
         return False, f"{file_descriptor} validation encountered the following problem: {e}"

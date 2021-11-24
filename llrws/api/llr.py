@@ -1,11 +1,7 @@
-import os
-from uuid import uuid4
-
-from flask import current_app
 from flask_restful import Resource, reqparse
 import werkzeug
 
-from llrws.tools.mave import validate_benchmark_schema, validate_score_schema
+from llrws.tools.mave import generate_mave_csv_filepaths, validate_benchmark_schema, validate_score_schema
 from llrws.tools.rscripts import execute_maveLLR_script
 from llrws.tools.web import rm_files, send_file_for_download, validate_file_properties
 
@@ -23,11 +19,10 @@ class LLR(Resource):
     def post(self):
         # Example cURL call: curl -v POST -H "Content-Type: multipart/form-data" -F "benchmark_file=@table-1.csv" -F "score_file=@table-2.csv" http://localhost:5000/api/
         args = self.parse.parse_args()
-        # Declare upload benchmark, score, and output maveLLR-processed CSV filepaths.
-        session_id = uuid4()
-        benchmark_filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-benchmark.csv")
-        score_filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-score.csv")
-        output_filepath = os.path.join(current_app.config["DOWNLOAD_FOLDER"], f"{session_id}-maveLLR.csv")
+        mave_filepaths = generate_mave_csv_filepaths()
+        benchmark_filepath = mave_filepaths["benchmark"]
+        score_filepath = mave_filepaths["score"]
+        output_filepath = mave_filepaths["output"]
 
         try:
             # Validate and save benchmark CSV file.
