@@ -7,7 +7,8 @@ import pandera as pa
 
 
 def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
-    """Validates CSV for data content schema pertaining to MAVE benchmark or score files.
+    """Identifies CSV file as benchmark or score and validates for data content schema.
+    Validated content templated from known MAVE benchmark and score CSV files.
     Descriptive error is returned if validation fails.
 
     Args:
@@ -15,19 +16,19 @@ def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
         file_descriptor (str): Description of file to concatenate to error message if error thrown
 
     Returns:
-        (bool): Indicative of validation success (True) or failure (False)
-        (str): CSV filetype (i.e. "score" or "benchmark") or "" if filetype detected or not, respectively
-        (str): "" or error message if validation success or failure, respectively
+        (bool): Validation success (True) or failure (False)
+        (str): CSV filetype (i.e. "score" or "benchmark"), or "" if filetype is not detected
+        (str): "" if success, error message if validation fails
     """
     is_valid_benchmark_schema, _ = validate_benchmark_schema(csv_filepath)
     if is_valid_benchmark_schema:
         return True, "benchmark", ""
 
-    is_valid_score_schema, error_msg = validate_score_schema(csv_filepath)
+    is_valid_score_schema, _ = validate_score_schema(csv_filepath)
     if is_valid_score_schema:
         return True, "score", ""
 
-    return False, "", f"{file_descriptor} encountered the following problem: {error_msg}"
+    return False, "", f"Error with {file_descriptor}: Neither benchmark nor score CSV"
 
 
 def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benchmark file"):

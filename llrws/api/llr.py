@@ -86,11 +86,11 @@ class LLR(Resource):
             (str): "" or error message if validation success or failure, respectively
         """
         # Validate input file properties and save file if valid.
-        is_file_valid, error_msg = validate_file_properties(file, file_descriptor=file_descriptor)
-        if not is_file_valid:
+        is_valid_file, error_msg = validate_file_properties(file, file_descriptor=file_descriptor)
+        if not is_valid_file:
             return False, "", error_msg
         file.save(filepath)
 
         # At this point, we're working with a CSV file - validate CSV schema.
-        is_csv_valid, error_msg = schema_validator(filepath, file_descriptor=file_descriptor)
-        return is_csv_valid, error_msg
+        is_valid_csv, error_msg = schema_validator(filepath, file_descriptor=file_descriptor)
+        return is_valid_csv, error_msg
