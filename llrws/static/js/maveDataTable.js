@@ -30,7 +30,12 @@ $(document).ready(function() {
 	$("#mave-button-submit").click(function() {
 		$('#mave-button-submit').val('Loading...').prop('disabled', true);
 		table.ajax.url("/data").load(function() {
-			$('#mave-button-submit').val('Get MAVE').prop('disabled', false);
+			// Reset text to default - 'Get MAVE'
+			$('#mave-button-submit').val('Get MAVE');
+			// Remove loaded Dropzone files on successful load.
+			maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
+    		maveCSVDropzone.removeAllFiles(true);
+			// Scroll to bottom of page to show table
 			$("html, body").animate({
 				scrollTop: document.body.scrollHeight
 			}, "slow");
