@@ -3,15 +3,6 @@ $("#mave-upload-csv").dropzone({
     addRemoveLinks: true,
     // We only need one benchmark and one score CSV file.
     maxFiles: 2,
-    removedfile: function(file) {
-        $.ajax({
-            type: "POST",
-            url: "/upload",
-        });
-        var _ref;
-        return (_ref = file.previewElement) != null ? _ref
-            .parentNode.removeChild(file.previewElement) : void 0;
-    },
     init: function() {
         // Get intance of Dropzone object.
         var maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
@@ -49,43 +40,6 @@ $("#mave-upload-csv").dropzone({
         });
     }
 });
-
-function invokeJobReady() {
-    /**
-     * Sets border color of #mave-upload-csv element to green and enables
-     * submit button.
-     */
-    invokeBorderColor("rgb(52, 168, 83)");
-    $('#mave-button-submit').prop('disabled', false);
-}
-
-function invokeJobSuspension() {
-    /**
-     * Sets border color of #mave-upload-csv element to red and disables
-     * submit button.
-     */
-    invokeBorderColor("rgb(220, 53, 69)");
-    $('#mave-button-submit').prop('disabled', true);
-}
-
-function invokeJobOpen() {
-    /**
-     * Sets border color of #mave-upload-csv element to blue and disables
-     * submit button.
-     */
-    invokeBorderColor("rgb(0, 135, 247)");
-    $('#mave-button-submit').prop('disabled', true);
-}
-
-function invokeBorderColor(color) {
-    /**
-     * Sets border color of #mave-upload-csv element
-     * @param  {[string]} color Color to set border color.
-     */
-    setTimeout(function(){
-        $("#mave-upload-csv").css("border", "2px dashed " + color);
-    }, 200);
-}
 
 function anyErrorFilesPresent() {
     /**

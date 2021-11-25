@@ -28,17 +28,48 @@ $(document).ready(function() {
 
 	// Get table content on button click.
 	$("#mave-button-submit").click(function() {
-		$('#mave-button-submit').val('Loading...').prop('disabled', true);
-		table.ajax.url("/data").load(function() {
-			// Remove loaded Dropzone files on successful load.
-			maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
-    		maveCSVDropzone.removeAllFiles(true);
-			// Reset text to default - 'Get MAVE'
-			$('#mave-button-submit').val('Get MAVE').prop('disabled', true);
-			// Scroll to bottom of page to show table
-			$("html, body").animate({
-				scrollTop: document.body.scrollHeight
-			}, "slow");
+		maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
+		// SYNCHRONOUSLY resubmit loaded documents in Dropzone instance to override persisted
+		// temp files stored on server. The temp files are caused by the user uploading and
+		// removing files from the Dropzone instance.
+		for (let i = 0; i < maveCSVDropzone.options.maxFiles; i++) {
+			var formData = new FormData();
+			formData.append('file', maveCSVDropzone.files[i]);
+			$.ajax({
+				async: false,
+				url : '/upload',
+				type : 'POST',
+				data : formData,
+				processData: false,  // tell jQuery not to process the data
+				contentType: false,  // tell jQuery not to set contentType
+				success : function(data) {
+					setLoadingButtonState();
+				}
+			});
+		}
+		// Then call an AJAX GET request to /data. Await request from /data before populating DataTable.
+		$.ajax({
+			url: "/data",
+			success: function(data) {
+				table.rows.add(data.data).draw();
+				// Remove loaded Dropzone files on successful load.
+				maveCSVDropzone.removeAllFiles(true);
+				setDefaultButtonState();
+				scrollToBottomOfPage();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				switch(jqXHR.status)
+				{
+					case 400:
+						alert("Error [400]: " + jqXHR.responseText);
+						invokeJobSuspension();
+						break;
+					case 500:
+						alert("Error [500]: " + jqXHR.responseText);
+						invokeJobSuspension();
+				}
+				setDefaultButtonState();
+			},
 		});
 	});
 });
