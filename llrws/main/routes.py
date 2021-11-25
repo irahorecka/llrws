@@ -81,14 +81,21 @@ def data():
     benchmark_file = os.path.join(current_app.config["UPLOAD_FOLDER"], csv_filepaths["benchmark"])
     score_file = os.path.join(current_app.config["UPLOAD_FOLDER"], csv_filepaths["score"])
 
-    files = {
-        "benchmark_file": open(benchmark_file, "rb"),
-        "score_file": open(score_file, "rb"),
-    }
     try:
-        response = requests.post(url_for("api.api_base", _external=True), files=files)
+        csv_files = {
+            "benchmark_file": open(benchmark_file, "rb"),
+            "score_file": open(score_file, "rb"),
+        }
+    except FileNotFoundError as e:
+        # E.g. get 'score' from: Error [400]: [...] No such file [...]: '/Users/[...]/9ff4b4d6-daea-4178-b170-7b24c77ce0c0-score.csv'
+        csv_filetype = str(e).split(".csv")[-2].split("-")[-1]
+        return str(f"{csv_filetype.title()} CSV file was not loaded. Please try again."), 400
+    try:
+        response = requests.post(url_for("api.api_base", _external=True), files=csv_files)
+        if response.status_code != 200:
+            return response.content.decode("utf-8"), 400
         flat_mave_csv = sort_flat_mave_csv(iter(csv.DictReader(StringIO(response.content.decode("utf-8")))))
-        return {"data": flat_mave_csv}
+        return {"data": flat_mave_csv}, 200
     finally:
         # Generate a new session UID after button click.
         session["uid"] = uuid4()
