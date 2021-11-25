@@ -24,17 +24,13 @@ $("#mave-upload-csv").dropzone({
         });
 
         this.on("removedfile", function(file, response) {
-            // Keep submit button disabled unless two valid files are loaded.
-            if (maveCSVDropzone.files.length != maveCSVDropzone.options.maxFiles) {
-                $('#mave-button-submit').prop('disabled', true);
+            // Cleans up dictionary storing filetypes by removing disposed files.
+            if (maveCSVDropzone.files.length == 1 && Object.keys(loadedFileTypes).length > 1) {
+                delete loadedFileTypes[file.name];
             }
             if (anyErrorFilesPresent()) {
                 invokeJobSuspension();
                 return;
-            }
-            // Cleans up file type dictionary of removed files.
-            if (maveCSVDropzone.files.length == 1 && Object.keys(loadedFileTypes).length > 1) {
-                delete loadedFileTypes[file.name];
             }
             if (areBothBenchmarkAndScoreFilesLoaded(maveCSVDropzone, loadedFileTypes)) {
                 invokeJobReady();
@@ -66,27 +62,47 @@ $("#mave-upload-csv").dropzone({
 });
 
 function invokeJobReady() {
+    /**
+     * Sets border color of #mave-upload-csv element to green and enables
+     * submit button.
+     */
     invokeBorderColor("rgb(52, 168, 83)");
     $('#mave-button-submit').prop('disabled', false);
 }
 
 function invokeJobSuspension() {
+    /**
+     * Sets border color of #mave-upload-csv element to red and disables
+     * submit button.
+     */
     invokeBorderColor("rgb(220, 53, 69)");
     $('#mave-button-submit').prop('disabled', true);
 }
 
 function invokeJobOpen() {
+    /**
+     * Sets border color of #mave-upload-csv element to blue and disables
+     * submit button.
+     */
     invokeBorderColor("rgb(0, 135, 247)");
     $('#mave-button-submit').prop('disabled', true);
 }
 
 function invokeBorderColor(color) {
+    /**
+     * Sets border color of #mave-upload-csv element
+     * @param  {[string]} color Color to set border color.
+     */
     setTimeout(function(){
         $("#mave-upload-csv").css("border", "2px dashed " + color);
     }, 200);
 }
 
 function anyErrorFilesPresent() {
+    /**
+     * Checks if any Dropzone-flagged error files are present on the DOM.
+     * @return {[bool]} Indicates whether there are or are not error files.
+     */
     var errorMessages = new Set();
     $(".dz-error-message span").each(function(){
         errorMessages.add($(this).text().trim().length);
@@ -99,6 +115,12 @@ function anyErrorFilesPresent() {
 }
 
 function areBothBenchmarkAndScoreFilesLoaded(DropzoneObj, loadedFileTypes) {
+    /**
+     * Checks if both benchmark and score CSV files are loaded in the Dropzone portal.
+     * @param  {[object]} DropzoneObj An instance of the Dropzone object.
+     * @param  {[object]} loadedFileTypes A dictionary mapping filename to filetype (i.e. 'benchmark' or 'score').
+     * @return {[bool]} Indicates whether both benchmark and score files are or are not present.
+     */
     var filesInDropzone = DropzoneObj.getAcceptedFiles()
     var filenamesInDropzone = filesInDropzone.map(x => loadedFileTypes[x.name])
     if (filesInDropzone.length == 2) {
@@ -110,9 +132,14 @@ function areBothBenchmarkAndScoreFilesLoaded(DropzoneObj, loadedFileTypes) {
 }
 
 function isDuplicateFile(DropzoneObj) {
+    /**
+     * Checks if duplicate files are present in a Dropzone object.
+     * @param  {[object]} DropzoneObj An instance of the Dropzone object.
+     * @return {[bool]} Indicates whether there are or are not duplicate files.
+     */
     var fileNames = DropzoneObj.getAcceptedFiles().map(x => x.name);
     var uniqueFileNames = new Set(fileNames)
-    if (uniqueFileNames.size == 1) {
+    if (uniqueFileNames.size != fileNames.length) {
         return true;
     }
     return false;
