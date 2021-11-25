@@ -1,6 +1,7 @@
 Dropzone.autoDiscover = false;
 $("#mave-upload-csv").dropzone({
     addRemoveLinks: true,
+    // We only need one benchmark and one score CSV file.
     maxFiles: 2,
     removedfile: function(file) {
         $.ajax({
@@ -12,9 +13,9 @@ $("#mave-upload-csv").dropzone({
             .parentNode.removeChild(file.previewElement) : void 0;
     },
     init: function() {
-        // Get intance of Dropzone object
+        // Get intance of Dropzone object.
         var maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
-        var loadedFileTypes = new Object();
+
         this.on("error", function(file, response) {
             invokeJobSuspension();
         });
@@ -24,16 +25,8 @@ $("#mave-upload-csv").dropzone({
         });
 
         this.on("removedfile", function(file, response) {
-            // Cleans up dictionary storing filetypes by removing disposed files.
-            if (maveCSVDropzone.files.length == 1 && Object.keys(loadedFileTypes).length > 1) {
-                delete loadedFileTypes[file.name];
-            }
             if (anyErrorFilesPresent()) {
                 invokeJobSuspension();
-                return;
-            }
-            if (areBothBenchmarkAndScoreFilesLoaded(maveCSVDropzone, loadedFileTypes)) {
-                invokeJobReady();
                 return;
             }
             invokeJobOpen();
@@ -45,18 +38,14 @@ $("#mave-upload-csv").dropzone({
             if (maveCSVDropzone.files.length == maveCSVDropzone.options.maxFiles) {
                 if (anyErrorFilesPresent() || isDuplicateFile(maveCSVDropzone)) {
                     invokeJobSuspension();
-                } else {
-                    invokeJobReady();
+                    return;
                 }
+                invokeJobReady();
                 return;
             }
-            // Check both correct filetypes are loaded
-            loadedFileTypes[file.name] = response;
-            if (areBothBenchmarkAndScoreFilesLoaded(maveCSVDropzone, loadedFileTypes)) {
-                invokeJobReady();
-            } else {
-                invokeJobOpen();
-            }
+            // At this point, a 200 response was received from the server - therefore we
+            // assume we have ONE valid file in the Dropzone instance.
+            invokeJobOpen();
         });
     }
 });
@@ -108,25 +97,8 @@ function anyErrorFilesPresent() {
         errorMessages.add($(this).text().trim().length);
     });
     if (errorMessages.size > 1 && errorMessages.values().next() != 0) {
-        // 0 represents a valid file
+        // 0 represents a valid file.
         return true;
-    }
-    return false;
-}
-
-function areBothBenchmarkAndScoreFilesLoaded(DropzoneObj, loadedFileTypes) {
-    /**
-     * Checks if both benchmark and score CSV files are loaded in the Dropzone portal.
-     * @param  {[object]} DropzoneObj An instance of the Dropzone object.
-     * @param  {[object]} loadedFileTypes A dictionary mapping filename to filetype (i.e. 'benchmark' or 'score').
-     * @return {[bool]} Indicates whether both benchmark and score files are or are not present.
-     */
-    var filesInDropzone = DropzoneObj.getAcceptedFiles()
-    var filenamesInDropzone = filesInDropzone.map(x => loadedFileTypes[x.name])
-    if (filesInDropzone.length == 2) {
-        if ("benchmark" in filenamesInDropzone && "score" in filenamesInDropzone) {
-            return true;
-        }
     }
     return false;
 }
