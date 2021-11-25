@@ -35,7 +35,9 @@ body {
 
 .dropzone {
     border-radius: 5px;
-    border: 2px dashed rgb(0, 135, 247);
+    border-width: 3px;
+    border-style: dashed;
+    border-color: rgb(0, 135, 247);
     border-image: none;
     margin-left: auto;
     margin-right: auto;

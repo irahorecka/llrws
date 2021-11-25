@@ -32,7 +32,7 @@ function invokeBorderColor(color) {
      * @param  {[string]} color Color to set border color.
      */
     setTimeout(function(){
-        $("#mave-upload-csv").css("border", "2px dashed " + color);
+        $("#mave-upload-csv").css("border-color", color);
     }, 200);
 }
 
