@@ -37,15 +37,23 @@ function invokeBorderColor(color) {
 }
 
 function setLoadingButtonState() {
+    /**
+     * Sets MAVE submit button text to 'Loading...' and disables button.
+     */
 	$('#mave-button-submit').val('Loading...').prop('disabled', true);
 }
 
 function setDefaultButtonState() {
+    /**
+     * Sets MAVE submit button text to 'Get MAVE' and disables button.
+     */
 	$('#mave-button-submit').val('Get MAVE').prop('disabled', true);
 }
 
 function scrollToBottomOfPage() {
-	// Scroll to bottom of page to show table
+    /**
+     * Scrolls to bottom of page to show table.
+     */
 	$("html, body").animate({
 		scrollTop: document.body.scrollHeight
 	}, "slow");

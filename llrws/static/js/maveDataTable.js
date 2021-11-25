@@ -29,28 +29,12 @@ $(document).ready(function() {
 	// Get table content on button click.
 	$("#mave-button-submit").click(function() {
 		maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
-		// SYNCHRONOUSLY resubmit loaded documents in Dropzone instance to override persisted
-		// temp files stored on server. The temp files are caused by the user uploading and
-		// removing files from the Dropzone instance.
-		for (let i = 0; i < maveCSVDropzone.options.maxFiles; i++) {
-			var formData = new FormData();
-			formData.append('file', maveCSVDropzone.files[i]);
-			$.ajax({
-				async: false,
-				url : '/upload',
-				type : 'POST',
-				data : formData,
-				processData: false,  // tell jQuery not to process the data
-				contentType: false,  // tell jQuery not to set contentType
-				success : function(data) {
-					setLoadingButtonState();
-				}
-			});
-		}
-		// Then call an AJAX GET request to /data. Await request from /data before populating DataTable.
+		reuploadDropzoneFilesSynchronously(maveCSVDropzone);
+		// After synchronous files upload, call an AJAX GET request to /data.
 		$.ajax({
 			url: "/data",
 			success: function(data) {
+				// Fill table content.
 				table.rows.add(data.data).draw();
 				// Remove loaded Dropzone files on successful load.
 				maveCSVDropzone.removeAllFiles(true);
@@ -72,4 +56,29 @@ $(document).ready(function() {
 			},
 		});
 	});
+
+	function reuploadDropzoneFilesSynchronously(DropzoneObj) {
+		/**
+		 * SYNCHRONOUSLY resubmit loaded documents in Dropzone instance to override persisted
+		 * temp files stored on server. The temp files are caused by the user uploading and
+		 * removing files from the Dropzone instance.
+		 * @param  {[object]} DropzoneObj An instance of the Dropzone object.
+		 */
+		for (let i = 0; i < DropzoneObj.options.maxFiles; i++) {
+			var formData = new FormData();
+			formData.append('file', DropzoneObj.files[i]);
+			$.ajax({
+				async: false,
+				url : '/upload',
+				type : 'POST',
+				data : formData,
+				processData: false,  // tell jQuery not to process the data
+				contentType: false,  // tell jQuery not to set contentType
+				success : function(data) {
+					setLoadingButtonState();
+				}
+			});
+		}
+	}
+
 });
