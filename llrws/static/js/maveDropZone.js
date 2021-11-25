@@ -28,58 +28,55 @@ $("#mave-upload-csv").dropzone({
             if (maveCSVDropzone.files.length != maveCSVDropzone.options.maxFiles) {
                 $('#mave-button-submit').prop('disabled', true);
             }
-            // Check if any error files present on file removal.
             if (anyErrorFilesPresent()) {
                 invokeJobSuspension();
-            } else {
-                invokeJobReady();
+                return;
             }
             // Cleans up file type dictionary of removed files.
             if (maveCSVDropzone.files.length == 1 && Object.keys(loadedFileTypes).length > 1) {
                 delete loadedFileTypes[file.name];
             }
-            // Check both correct filetypes are loaded
-            if (bothBenchmarkAndScoreFilesLoaded(loadedFileTypes)) {
+            if (areBothBenchmarkAndScoreFilesLoaded(maveCSVDropzone, loadedFileTypes)) {
                 invokeJobReady();
-            } else {
-                invokeJobSuspension();
+                return;
             }
-            // No more files in Dropzone instance.
-            if (maveCSVDropzone.files.length == 0) {
-                invokeJobReady();
-            } else {
-                invokeJobSuspension();
-            }
+            invokeJobOpen();
         });
 
         this.on("success", function(file, response) {
             // On successful upload, the number of uploads should equal the max size
             // and there should be no error files present.
             if (maveCSVDropzone.files.length == maveCSVDropzone.options.maxFiles) {
-                if (anyErrorFilesPresent()) {
+                if (anyErrorFilesPresent() || isDuplicateFile(maveCSVDropzone)) {
                     invokeJobSuspension();
                 } else {
                     invokeJobReady();
                 }
+                return;
             }
             // Check both correct filetypes are loaded
             loadedFileTypes[file.name] = response;
-            if (bothBenchmarkAndScoreFilesLoaded(loadedFileTypes)) {
+            if (areBothBenchmarkAndScoreFilesLoaded(maveCSVDropzone, loadedFileTypes)) {
                 invokeJobReady();
             } else {
-                invokeJobSuspension();
+                invokeJobOpen();
             }
         });
     }
 });
 
 function invokeJobReady() {
-    invokeBorderColor("rgb(0, 135, 247)");
+    invokeBorderColor("rgb(52, 168, 83)");
     $('#mave-button-submit').prop('disabled', false);
 }
 
 function invokeJobSuspension() {
     invokeBorderColor("rgb(220, 53, 69)");
+    $('#mave-button-submit').prop('disabled', true);
+}
+
+function invokeJobOpen() {
+    invokeBorderColor("rgb(0, 135, 247)");
     $('#mave-button-submit').prop('disabled', true);
 }
 
@@ -90,22 +87,32 @@ function invokeBorderColor(color) {
 }
 
 function anyErrorFilesPresent() {
-    var noErrorMessage = new Set();
+    var errorMessages = new Set();
     $(".dz-error-message span").each(function(){
-        noErrorMessage.add($(this).text().trim().length);
+        errorMessages.add($(this).text().trim().length);
     });
-    if (noErrorMessage.size > 1 && noErrorMessage.values().next() != 0) {
+    if (errorMessages.size > 1 && errorMessages.values().next() != 0) {
+        // 0 represents a valid file
         return true;
     }
     return false;
 }
 
-function bothBenchmarkAndScoreFilesLoaded(loadedFileTypes) {
-    currentFileTypes = new Set();
-    for (var key in loadedFileTypes){
-        currentFileTypes.add(loadedFileTypes[key]);
+function areBothBenchmarkAndScoreFilesLoaded(DropzoneObj, loadedFileTypes) {
+    var filesInDropzone = DropzoneObj.getAcceptedFiles()
+    var filenamesInDropzone = filesInDropzone.map(x => loadedFileTypes[x.name])
+    if (filesInDropzone.length == 2) {
+        if ("benchmark" in filenamesInDropzone && "score" in filenamesInDropzone) {
+            return true;
+        }
     }
-    if (currentFileTypes.has("benchmark") && currentFileTypes.has("score")) {
+    return false;
+}
+
+function isDuplicateFile(DropzoneObj) {
+    var fileNames = DropzoneObj.getAcceptedFiles().map(x => x.name);
+    var uniqueFileNames = new Set(fileNames)
+    if (uniqueFileNames.size == 1) {
         return true;
     }
     return false;
