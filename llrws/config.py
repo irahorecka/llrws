@@ -15,7 +15,7 @@ class Config:
     TESTING = False
     SECRET_KEY = os.environ["SECRET_KEY"]
     SERVER_NAME = "localhost:5000"
-    SESSION_COOKIE_SAMESITE = None
+    SESSION_COOKIE_SAMESITE = "None"
     SESSION_COOKIE_SECURE = True
 
     # File processing
