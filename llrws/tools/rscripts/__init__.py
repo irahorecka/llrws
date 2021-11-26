@@ -4,7 +4,7 @@ import subprocess
 RSCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def execute_maveLLR_script(benchmark_filepath, score_filepath, download_filepath):
+def execute_maveLLR_rscript(benchmark_filepath, score_filepath, download_filepath):
     """Executes ./mave.r and writes output CSV file to `download_filepath`.
 
     Args:

@@ -6,16 +6,20 @@ Flask blueprint to handle routes.
 """
 
 import os
-import csv
-from io import StringIO
 from uuid import uuid4
 
 import requests
-from flask import current_app, render_template, request, session, url_for, Blueprint
+from flask import render_template, request, session, url_for, Blueprint
 from flask_cors import cross_origin
 
 from llrws.exceptions import InvalidUploadFile
-from llrws.tools.mave import generate_mave_csv_filepaths, sort_flat_mave_csv, validate_benchmark_or_score_schema
+from llrws.tools.mave import (
+    generate_mave_csv_filepaths,
+    get_mave_csv_filetype_from_exception,
+    rename_mave_csv_file_by_filetype,
+    sort_mave_csv_by_hgvs_pro_from_reponse_content,
+    validate_benchmark_or_score_schema_from_mave_csv_file,
+)
 from llrws.tools.web import rm_files, validate_file_properties
 
 main = Blueprint("main", __name__)
@@ -42,60 +46,52 @@ def upload():
     except KeyError:
         # Raised when user deletes file from dropzone.
         return "No file", 200
-    upload_filepath = generate_mave_csv_filepaths()["misc"]
 
+    upload_csv_filepath = generate_mave_csv_filepaths()["misc"]
     try:
         # Check if the general file properties are valid...
         is_valid_file, error_msg = validate_file_properties(upload_file, file_descriptor="Uploaded file")
         if not is_valid_file:
             raise InvalidUploadFile(error_msg)
-
         # ... then check if the CSV content is valid.
-        upload_file.save(upload_filepath)
-        is_valid_csv, csv_filetype, error_msg = validate_benchmark_or_score_schema(
-            upload_filepath, file_descriptor="Uploaded file"
+        upload_file.save(upload_csv_filepath)
+        is_valid_csv, error_msg, csv_filetype = validate_benchmark_or_score_schema_from_mave_csv_file(
+            upload_csv_filepath, file_descriptor="Uploaded CSV file"
         )
         if not is_valid_csv:
             raise InvalidUploadFile(error_msg)
+        rename_mave_csv_file_by_filetype(upload_csv_filepath, csv_filetype, session_id=session["uid"])
+        return "Upload successful", 200
 
-        # Rename both file types with the same session UID. This will be used in /data
-        if csv_filetype == "score":
-            score_filepath = generate_mave_csv_filepaths(session_id=session["uid"])["score"]
-            os.rename(upload_filepath, score_filepath)
-        if csv_filetype == "benchmark":
-            benchmark_filepath = generate_mave_csv_filepaths(session_id=session["uid"])["benchmark"]
-            os.rename(upload_filepath, benchmark_filepath)
-
-        return csv_filetype, 200
     except InvalidUploadFile as e:
         return str(e), 400
+
     finally:
-        rm_files(upload_filepath)
+        rm_files(upload_csv_filepath)
 
 
 @main.route("/data")
 def data():
     """AJAX: Load CSV data when called."""
     # Get CSV filepaths using UID stored in session
-    csv_filepaths = generate_mave_csv_filepaths(session_id=session["uid"])
-    benchmark_file = os.path.join(current_app.config["UPLOAD_FOLDER"], csv_filepaths["benchmark"])
-    score_file = os.path.join(current_app.config["UPLOAD_FOLDER"], csv_filepaths["score"])
-
+    mave_csv_filepaths = generate_mave_csv_filepaths(session_id=session["uid"])
+    mave_benchmark_file = mave_csv_filepaths["benchmark"]
+    mave_score_file = mave_csv_filepaths["score"]
     try:
         csv_files = {
-            "benchmark_file": open(benchmark_file, "rb"),
-            "score_file": open(score_file, "rb"),
+            "benchmark_file": open(mave_benchmark_file, "rb"),
+            "score_file": open(mave_score_file, "rb"),
         }
     except FileNotFoundError as e:
-        # E.g. get 'score' from: Error [400]: [...] No such file [...]: '/Users/[...]/9ff4b4d6-daea-4178-b170-7b24c77ce0c0-score.csv'
-        csv_filetype = str(e).split(".csv")[-2].split("-")[-1]
-        return str(f"{csv_filetype.title()} CSV file was not loaded. Please try again."), 400
+        error_msg = f"{get_mave_csv_filetype_from_exception(str(e)).title()} filetype not found"
+        return error_msg, 400
     try:
         response = requests.post(url_for("api.api_base", _external=True), files=csv_files)
+        response_content = response.content.decode("utf-8")
         if response.status_code != 200:
-            return response.content.decode("utf-8"), 400
-        flat_mave_csv = sort_flat_mave_csv(iter(csv.DictReader(StringIO(response.content.decode("utf-8")))))
-        return {"data": flat_mave_csv}, 200
+            return response_content, 400
+        sorted_mave_csv = sort_mave_csv_by_hgvs_pro_from_reponse_content(response_content)
+        return {"data": sorted_mave_csv}, 200
     finally:
         # Generate a new session UID after button click.
         session["uid"] = uuid4()

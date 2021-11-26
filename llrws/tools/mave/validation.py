@@ -6,36 +6,36 @@ import pandas as pd
 import pandera as pa
 
 
-def validate_benchmark_or_score_schema(csv_filepath, file_descriptor):
+def validate_benchmark_or_score_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor):
     """Identifies CSV file as benchmark or score and validates for data content schema.
     Validated content templated from known MAVE benchmark and score CSV files.
     Descriptive error is returned if validation fails.
 
     Args:
-        csv_filepath (str): File path to MAVE benchmark or score CSV file
+        mave_csv_filepath (str): File path to MAVE benchmark or score CSV file
         file_descriptor (str): Description of file to concatenate to error message if error thrown
 
     Returns:
         (bool): Validation success (True) or failure (False)
-        (str): CSV filetype (i.e. "score" or "benchmark"), or "" if filetype is not detected
         (str): "" if success, error message if validation fails
+        (str): CSV filetype (i.e. "score" or "benchmark"), or "" if filetype is not detected
     """
-    is_valid_benchmark_schema, _ = validate_benchmark_schema(csv_filepath)
+    is_valid_benchmark_schema, _ = validate_benchmark_schema_from_mave_csv_file(mave_csv_filepath)
     if is_valid_benchmark_schema:
-        return True, "benchmark", ""
+        return True, "", "benchmark"
 
-    is_valid_score_schema, _ = validate_score_schema(csv_filepath)
+    is_valid_score_schema, _ = validate_score_schema_from_mave_csv_file(mave_csv_filepath)
     if is_valid_score_schema:
-        return True, "score", ""
+        return True, "", "score"
 
-    return False, "", f"{file_descriptor} is neither a benchmark nor score CSV"
+    return False, f"{file_descriptor} is neither a benchmark nor score file", ""
 
 
-def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benchmark file"):
+def validate_benchmark_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor="MAVE benchmark file"):
     """Validates Pandas DataFrame with data content from MAVE benchmark file.
 
     Args:
-        benchmark_csv_filepath (str): File path to MAVE benchmark CSV file
+        mave_csv_filepath (str): File path to MAVE benchmark CSV file
 
     Returns:
         (bool): Indicative of validation success (True) or failure (False)
@@ -56,7 +56,7 @@ def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benc
         coerce=True,
     )
     try:
-        benchmark_df = pd.read_csv(benchmark_csv_filepath)
+        benchmark_df = pd.read_csv(mave_csv_filepath)
         # Attempt benchmark schema validation
         benchmark_schema(benchmark_df)
         return True, ""
@@ -64,11 +64,11 @@ def validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benc
         return False, f"{file_descriptor} validation encountered the following problem: {e}"
 
 
-def validate_score_schema(score_csv_filepath, file_descriptor="MAVE score file"):
+def validate_score_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor="MAVE score file"):
     """Validates Pandas DataFrame with data content from MAVE score file.
 
     Args:
-        score_csv_filepath (str): File path to MAVE benchmark CSV file
+        mave_csv_filepath (str): File path to MAVE benchmark CSV file
 
     Returns:
         (bool): Indicative of validation success (True) or failure (False)
@@ -86,7 +86,7 @@ def validate_score_schema(score_csv_filepath, file_descriptor="MAVE score file")
         coerce=True,
     )
     try:
-        score_df = pd.read_csv(score_csv_filepath)
+        score_df = pd.read_csv(mave_csv_filepath)
         # Attempt score schema validation
         score_schema(score_df)
         return True, ""
