@@ -42,8 +42,7 @@ $(document).ready(function() {
 				scrollToBottomOfPage();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				switch(jqXHR.status)
-				{
+				switch(jqXHR.status) {
 					case 400:
 						alert("Error [400]: " + jqXHR.responseText);
 						invokeJobSuspension();
@@ -61,7 +60,7 @@ $(document).ready(function() {
 		/**
 		 * SYNCHRONOUSLY resubmit loaded documents in Dropzone instance to override persisted
 		 * temp files stored on server. The temp files are caused by the user uploading and
-		 * removing files from the Dropzone instance.
+		 * removing files like a maniac from the Dropzone instance.
 		 * @param  {[object]} DropzoneObj An instance of the Dropzone object.
 		 */
 		for (let i = 0; i < DropzoneObj.options.maxFiles; i++) {

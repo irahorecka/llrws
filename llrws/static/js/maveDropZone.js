@@ -1,5 +1,7 @@
 Dropzone.autoDiscover = false;
+
 $("#mave-upload-csv").dropzone({
+    // Allow removal up uploaded files.
     addRemoveLinks: true,
     // We only need one benchmark and one score CSV file.
     maxFiles: 2,
@@ -20,6 +22,9 @@ $("#mave-upload-csv").dropzone({
                 invokeJobSuspension();
                 return;
             }
+            // Why default to invokeJobOpen()? A: You'll never be in a state to submit files for MAVE
+            // processing AFTER you remove your file(s). I.e., Number of files after removal will always be
+            // less than value of maveCSVDropzone.options.maxFiles.
             invokeJobOpen();
         });
 
@@ -34,8 +39,8 @@ $("#mave-upload-csv").dropzone({
                 invokeJobReady();
                 return;
             }
-            // At this point, a 200 response was received from the server - therefore we
-            // assume we have ONE valid file in the Dropzone instance.
+            // At this point, we know a 200 response was received from the server
+            // - therefore we assume we have ONE valid file in the Dropzone instance.
             invokeJobOpen();
         });
     }
