@@ -1,11 +1,14 @@
 import os
 import subprocess
 
+from llrws.exceptions import RscriptException
+
 RSCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def execute_maveLLR_rscript(benchmark_filepath, score_filepath, download_filepath):
     """Executes ./mave.r and writes output CSV file to `download_filepath`.
+    Raises RscriptException if R-Script raises an exception.
 
     Args:
         benchmark_filepath (str): Path to benchmark CSV file
@@ -13,8 +16,7 @@ def execute_maveLLR_rscript(benchmark_filepath, score_filepath, download_filepat
         download_filepath (str): Path to maveLLR-processed CSV file
 
     Returns:
-        (bool): Indicative of process success (True) or failure (False)
-        (str): StdError of StdOut if failure or success, respectively
+        (None)
     """
     mave_rscript_filepath = os.path.join(RSCRIPTS_DIR, "mave.r")
     # At this point, nearly *all* data validation should be complete for benchmark_filepath
@@ -26,13 +28,11 @@ def execute_maveLLR_rscript(benchmark_filepath, score_filepath, download_filepat
         f"--score={score_filepath}",
         f"--download={download_filepath}",
     ]
-    # Output CSV file is written to disk in mave.r if execution is successful.
+    # Output CSV file is written to disk as `download_filepath` in mave.r if execution is successful.
     result, return_code = execute_subprocess(rscript_call)
-    # Non-zero exit code - indicate error and return stderr to caller.
+    # Non-zero exit code - raise exception with stderr.
     if return_code != 0:
-        return False, result.stderr.read().decode("utf-8")
-    # Return success flag + stdout from Rscript execution.
-    return True, result.stdout.read().decode("utf-8")
+        raise RscriptException(result.stderr.read().decode("utf-8"))
 
 
 def execute_subprocess(script_call):

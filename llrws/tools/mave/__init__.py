@@ -3,16 +3,9 @@ from uuid import uuid4
 
 from flask import current_app
 
-from llrws.tools.mave.tidydata import sort_mave_csv_by_hgvs_pro_from_reponse_content
-from llrws.tools.mave.validation import (
-    validate_benchmark_schema_from_mave_csv_file,
-    validate_score_schema_from_mave_csv_file,
-    validate_benchmark_or_score_schema_from_mave_csv_file,
-)
-
 
 def generate_mave_csv_filepaths(session_id=None):
-    """Generates MAVE CSV filepaths for MAVE filetypes as follows:
+    """Generates MAVE CSV filepaths for MAVE schema types as follows:
     - Benchmark (key: 'benchmark')
     - Score (key: 'score')
     - Output (key: 'output')
@@ -36,8 +29,8 @@ def generate_mave_csv_filepaths(session_id=None):
     }
 
 
-def get_mave_csv_filetype_from_exception(exception):
-    """Get MAVE CSV filetype from exception string.
+def get_mave_csv_schematype_from_exception(exception):
+    """Get MAVE CSV schema type from exception string.
     E.g. get 'score' from:
     Error [400]: [...] No such file [...]: '/Users/[...]/9ff4b4d6-daea-4178-b170-7b24c77ce0c0-score.csv'
 
@@ -46,7 +39,7 @@ def get_mave_csv_filetype_from_exception(exception):
                          MAVE CSV filepath must be in the exception traceback.
 
     Returns:
-        (str): The filetype of the MAVE CSV file or "" if filetype isn't found
+        (str): The schematype of the MAVE CSV file or "" if schematype isn't found
     """
     try:
         return exception.lower().split(".csv")[-2].split("-")[-1]
@@ -54,12 +47,12 @@ def get_mave_csv_filetype_from_exception(exception):
         return ""
 
 
-def rename_mave_csv_file_by_filetype(csv_filepath, csv_filetype, session_id=None):
-    """Rename `csv_filepath` as '{`session_id`}-{`csv_filetype`}.csv'.
+def rename_mave_csv_file_by_schematype(csv_filepath, csv_schematype, session_id=None):
+    """Rename `csv_filepath` as '{`session_id`}-{`csv_schematype`}.csv'.
 
     Args:
         csv_filepath (str): CSV filepath to rename
-        csv_filetype (str): MAVE CSV filetype
+        csv_schematype (str): MAVE CSV schema type
 
     Kwargs:
         session_id (str): Unique identifier for the CSV file. If not provided, a new
@@ -68,5 +61,5 @@ def rename_mave_csv_file_by_filetype(csv_filepath, csv_filetype, session_id=None
     Returns:
         (None)
     """
-    csv_filetype_filepath = generate_mave_csv_filepaths(session_id=session_id)[csv_filetype]
-    os.rename(csv_filepath, csv_filetype_filepath)
+    csv_schematype_filepath = generate_mave_csv_filepaths(session_id=session_id)[csv_schematype]
+    os.rename(csv_filepath, csv_schematype_filepath)

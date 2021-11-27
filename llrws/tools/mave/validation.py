@@ -5,41 +5,61 @@ warnings.simplefilter(action="ignore", category=UserWarning)
 import pandas as pd
 import pandera as pa
 
-
-def validate_benchmark_or_score_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor):
-    """Identifies CSV file as benchmark or score and validates for data content schema.
-    Validated content templated from known MAVE benchmark and score CSV files.
-    Descriptive error is returned if validation fails.
-
-    Args:
-        mave_csv_filepath (str): File path to MAVE benchmark or score CSV file
-        file_descriptor (str): Description of file to concatenate to error message if error thrown
-
-    Returns:
-        (bool): Validation success (True) or failure (False)
-        (str): "" if success, error message if validation fails
-        (str): CSV filetype (i.e. "score" or "benchmark"), or "" if filetype is not detected
-    """
-    is_valid_benchmark_schema, _ = validate_benchmark_schema_from_mave_csv_file(mave_csv_filepath)
-    if is_valid_benchmark_schema:
-        return True, "", "benchmark"
-
-    is_valid_score_schema, _ = validate_score_schema_from_mave_csv_file(mave_csv_filepath)
-    if is_valid_score_schema:
-        return True, "", "score"
-
-    return False, f"{file_descriptor} is neither a benchmark nor score file", ""
+from llrws.exceptions import InvalidCsvSchema, InvalidCsvSchemaType
 
 
-def validate_benchmark_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor="MAVE benchmark file"):
+def get_schema_type(csv_filepath):
     """Validates Pandas DataFrame with data content from MAVE benchmark file.
 
     Args:
-        mave_csv_filepath (str): File path to MAVE benchmark CSV file
+        csv_filepath (str): File path to CSV file
 
     Returns:
-        (bool): Indicative of validation success (True) or failure (False)
-        (str): "" or error message if validation success or failure, respectively
+        (str): Schema type of `csv_filepath`
+    """
+    schemas = {
+        validate_benchmark_schema: "benchmark",
+        validate_score_schema: "score",
+    }
+    for schema, schema_type in schemas.items():
+        try:
+            schema(csv_filepath)
+            return schema_type
+        except InvalidCsvSchema:
+            pass
+    raise InvalidCsvSchemaType("CSV schema type unknown.")
+
+
+def validate_schema(csv_filepath, schema_type):
+    """Validates `csv_filepath` schema according to a registered schema type.
+    Raises InvalidCsvSchema if validation fails.
+
+    Args:
+        csv_filepath (str): File path to CSV file
+        schema_type (str): Schema type to be applied to `csv_filepath`
+
+    Returns:
+        (None)
+    """
+    schemas = {
+        "benchmark": validate_benchmark_schema,
+        "score": validate_score_schema,
+    }
+    # Don't input the wrong key here...
+    schema = schemas[schema_type]
+    # Validate schema - raises InvalidCsvSchema if schema validation fails.
+    schema(csv_filepath)
+
+
+def validate_benchmark_schema(csv_filepath, file_descriptor="MAVE benchmark file"):
+    """Validates Pandas DataFrame with data content from MAVE benchmark file.
+    Raises InvalidCsvSchema if validation fails.
+
+    Args:
+        csv_filepath (str): File path to benchmark CSV file
+
+    Returns:
+        (None)
     """
     benchmark_schema = pa.DataFrameSchema(
         {
@@ -56,23 +76,22 @@ def validate_benchmark_schema_from_mave_csv_file(mave_csv_filepath, file_descrip
         coerce=True,
     )
     try:
-        benchmark_df = pd.read_csv(mave_csv_filepath)
+        benchmark_df = pd.read_csv(csv_filepath)
         # Attempt benchmark schema validation
         benchmark_schema(benchmark_df)
-        return True, ""
     except (pd.errors.ParserError, pa.errors.SchemaError) as e:
-        return False, f"{file_descriptor} validation encountered the following problem: {e}"
+        raise InvalidCsvSchema(f"Invalid schema: {file_descriptor} encountered the following problem: {e}") from e
 
 
-def validate_score_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor="MAVE score file"):
+def validate_score_schema(csv_filepath, file_descriptor="MAVE score file"):
     """Validates Pandas DataFrame with data content from MAVE score file.
+    Raises InvalidCsvSchema if validation fails.
 
     Args:
-        mave_csv_filepath (str): File path to MAVE benchmark CSV file
+        csv_filepath (str): File path to benchmark CSV file
 
     Returns:
-        (bool): Indicative of validation success (True) or failure (False)
-        (str): "" or error message if validation success or failure, respectively
+        (None)
     """
     score_schema = pa.DataFrameSchema(
         {
@@ -86,9 +105,8 @@ def validate_score_schema_from_mave_csv_file(mave_csv_filepath, file_descriptor=
         coerce=True,
     )
     try:
-        score_df = pd.read_csv(mave_csv_filepath)
+        score_df = pd.read_csv(csv_filepath)
         # Attempt score schema validation
         score_schema(score_df)
-        return True, ""
     except (pd.errors.ParserError, pa.errors.SchemaError) as e:
-        return False, f"{file_descriptor} validation encountered the following problem: {e}"
+        raise InvalidCsvSchema(f"Invalid schema: {file_descriptor} encountered the following problem: {e}") from e

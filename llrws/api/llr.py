@@ -1,11 +1,10 @@
 from flask_restful import Resource, reqparse
 import werkzeug
 
-from llrws.tools.mave import (
-    generate_mave_csv_filepaths,
-    validate_benchmark_schema_from_mave_csv_file,
-    validate_score_schema_from_mave_csv_file,
-)
+
+from llrws.exceptions import InvalidCsvSchema, RscriptException
+from llrws.tools.mave import generate_mave_csv_filepaths
+from llrws.tools.mave.validation import validate_benchmark_schema, validate_score_schema
 from llrws.tools.rscripts import execute_maveLLR_rscript
 from llrws.tools.web import rm_files, send_file_for_download, validate_file_properties
 
@@ -29,66 +28,26 @@ class LLR(Resource):
         output_csv_filepath = mave_csv_filepaths["output"]
 
         try:
-            # Files from args are wildcards - may or may not be CSV files.
             benchmark_file = args["benchmark_file"]
-            is_valid_benchmark_file, error_msg = self._validate_and_save_csv_file(
-                benchmark_file,
-                benchmark_csv_filepath,
-                file_descriptor="MAVE benchmark CSV",
-                schema_validator=validate_benchmark_schema_from_mave_csv_file,
-            )
-            if not is_valid_benchmark_file:
-                error_msg = f"{error_msg}. Please verify your MAVE benchmark CSV file and try again."
-                return error_msg, 400
+            # Files from args are wildcards - may or may not be CSV files.
+            validate_file_properties(benchmark_file, file_descriptor="MAVE benchmark CSV")
+            # We are confident our benchmark file is a CSV - save and validate schema.
+            benchmark_file.save(benchmark_csv_filepath)
+            validate_benchmark_schema(benchmark_csv_filepath, file_descriptor="MAVE benchmark CSV")
 
             score_file = args["score_file"]
-            is_valid_score_file, error_msg = self._validate_and_save_csv_file(
-                score_file,
-                score_csv_filepath,
-                file_descriptor="MAVE score CSV",
-                schema_validator=validate_score_schema_from_mave_csv_file,
-            )
-            if not is_valid_score_file:
-                error_msg = f"{error_msg}. Please verify your MAVE score CSV file and try again."
-                return error_msg, 400
+            validate_file_properties(score_file, file_descriptor="MAVE score CSV")
+            score_file.save(score_csv_filepath)
+            validate_score_schema(score_csv_filepath, file_descriptor="MAVE score CSV")
 
-            # Execute R script ../rscripts/mave.r via Python wrapper scripts.execute_maveLLR_rscript.
-            # error_msg is either stderr or stdout and is conditional to failure or success, respectively.
-            # However, error_msg will only be returned if failure, hence it will only be used in stderr instances.
-            is_script_successful, error_msg = execute_maveLLR_rscript(
-                benchmark_csv_filepath, score_csv_filepath, download_filepath=output_csv_filepath
-            )
-            if not is_script_successful:
-                return error_msg, 400
-
+            # Execute R script ../rscripts/mave.r via Python wrapper scripts.execute_maveLLR_rscript and save
+            # output to `output_csv_filepath`.
+            execute_maveLLR_rscript(benchmark_csv_filepath, score_csv_filepath, download_filepath=output_csv_filepath)
             return send_file_for_download(output_csv_filepath, filename="maveLLR.csv")
+
+        except (InvalidCsvSchema, RscriptException) as e:
+            return str(e), 400
 
         finally:
             # Remove all upload and download files regardless of success / failure.
-            rm_files(filepaths=[benchmark_csv_filepath, score_csv_filepath, output_csv_filepath])
-
-    @staticmethod
-    def _validate_and_save_csv_file(file, filepath, file_descriptor, schema_validator):
-        """Validates file properties, saves CSV file, and validates appropriate CSV schema of file.
-        Descriptive error is returned if validation fails.
-
-        Args:
-            file (werkzeug.datastructures.FileStorage): FileStorage instance of MAVE benchmark or score CSV file
-            filepath (str): File path to MAVE benchmark or score CSV file
-            file_descriptor (str): Description of CSV file
-            schema_validator (llrws.utils.web.validate_benchmark_schema_from_mave_csv_file or *.*.*.validate_score_schema_from_mave_csv_file):
-                A function that validates the MAVE benchmark or score CSV file schema.
-
-        Returns:
-            (bool): Indicative of validation success (True) or failure (False)
-            (str): "" or error message if validation success or failure, respectively
-        """
-        # Validate input file properties and save file if valid.
-        is_valid_file, error_msg = validate_file_properties(file, file_descriptor=file_descriptor)
-        if not is_valid_file:
-            return False, "", error_msg
-
-        file.save(filepath)
-        # At this point, we're working with a CSV file - validate CSV schema.
-        is_valid_csv, error_msg = schema_validator(filepath, file_descriptor=file_descriptor)
-        return is_valid_csv, error_msg
+            rm_files(filepaths=(benchmark_csv_filepath, score_csv_filepath, output_csv_filepath))

@@ -38,9 +38,6 @@ def rm_files(filepaths):
     Returns:
         (None)
     """
-    # Check if filepaths in an iterable container.
-    if not isinstance(filepaths, (dict, list, set, tuple)):
-        filepaths = [filepaths]
     for file in filepaths:
         try:
             os.remove(file)
