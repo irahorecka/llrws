@@ -9,7 +9,8 @@ from llrws.exceptions import InvalidCsvSchema, InvalidCsvSchemaType
 
 
 def get_schema_type(csv_filepath):
-    """Validates Pandas DataFrame with data content from MAVE benchmark file.
+    """Gets schema type from CSV filepath.
+    Raises InvalidCsvSchemaType if schema type cannot be identified.
 
     Args:
         csv_filepath (str): File path to CSV file
@@ -28,27 +29,6 @@ def get_schema_type(csv_filepath):
         except InvalidCsvSchema:
             pass
     raise InvalidCsvSchemaType("CSV schema type unknown.")
-
-
-def validate_schema(csv_filepath, schema_type):
-    """Validates `csv_filepath` schema according to a registered schema type.
-    Raises InvalidCsvSchema if validation fails.
-
-    Args:
-        csv_filepath (str): File path to CSV file
-        schema_type (str): Schema type to be applied to `csv_filepath`
-
-    Returns:
-        (None)
-    """
-    schemas = {
-        "benchmark": validate_benchmark_schema,
-        "score": validate_score_schema,
-    }
-    # Don't input the wrong key here...
-    schema = schemas[schema_type]
-    # Validate schema - raises InvalidCsvSchema if schema validation fails.
-    schema(csv_filepath)
 
 
 def validate_benchmark_schema(csv_filepath, file_descriptor="MAVE benchmark file"):

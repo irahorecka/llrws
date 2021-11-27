@@ -18,7 +18,7 @@ from llrws.tools.mave import (
     rename_mave_csv_file_by_schematype,
 )
 from llrws.tools.mave.tidydata import get_mave_csv_sorted_by_hgvs_pro
-from llrws.tools.mave.validation import get_schema_type, validate_schema
+from llrws.tools.mave.validation import get_schema_type
 from llrws.tools.web import rm_files, validate_file_properties
 
 main = Blueprint("main", __name__)
@@ -46,7 +46,7 @@ def upload():
         # Raised when user deletes file from dropzone.
         return "No file", 200
 
-    upload_csv_filepath = generate_mave_csv_filepaths()["misc"]
+    upload_csv_filepath = generate_mave_csv_filepaths()["upload"]
     try:
         # Check if the general file properties are valid...
         try:
@@ -61,8 +61,7 @@ def upload():
         except InvalidCsvSchemaType:
             raise InvalidUploadFile("Uploaded CSV file is not recognized.")
 
-        validate_schema(upload_csv_filepath, schema_type)
-        # Validation was successful - rename uploaded file to sync with detected schema type.
+        # Schema type was found - rename uploaded file to sync with schema type.
         rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=session["uid"])
         return "Upload successful", 200
 

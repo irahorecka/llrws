@@ -6,10 +6,10 @@ from flask import current_app
 
 def generate_mave_csv_filepaths(session_id=None):
     """Generates MAVE CSV filepaths for MAVE schema types as follows:
-    - Benchmark (key: 'benchmark')
-    - Score (key: 'score')
-    - Output (key: 'output')
-    - Misc. (key: 'misc')
+    - Benchmark (key: 'benchmark') - Benchmark file to pipe into MAVE LLR R-Script
+    - Score (key: 'score') - Score file to pipe into MAVE LLR R-Script
+    - Output (key: 'output') - Output file for download from MAVE LLR R-Script
+    - Upload (key: 'upload') - Upload file as provided by user
 
     Kwargs:
         session_id (str): Unique identifier to prepend to MAVE CSV filepaths
@@ -25,7 +25,7 @@ def generate_mave_csv_filepaths(session_id=None):
         "score": os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-score.csv"),
         "output": os.path.join(current_app.config["DOWNLOAD_FOLDER"], f"{session_id}-maveLLR.csv"),
         # Unknown file
-        "misc": os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-misc.csv"),
+        "upload": os.path.join(current_app.config["UPLOAD_FOLDER"], f"{session_id}-upload.csv"),
     }
 
 
