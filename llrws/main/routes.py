@@ -11,7 +11,7 @@ import requests
 from flask import render_template, request, session, url_for, Blueprint
 from flask_cors import cross_origin
 
-from llrws.exceptions import FileValidationError, InvalidCsvSchema, InvalidCsvSchemaType, InvalidUploadFile
+from llrws.exceptions import FileValidationError, InvalidCsvSchemaType, InvalidUploadFile
 from llrws.tools.mave import (
     generate_mave_csv_filepaths,
     get_mave_csv_schematype_from_exception,
@@ -65,7 +65,7 @@ def upload():
         rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=session["uid"])
         return "Upload successful", 200
 
-    except (InvalidCsvSchema, InvalidUploadFile) as e:
+    except InvalidUploadFile as e:
         return str(e), 400
 
     finally:
