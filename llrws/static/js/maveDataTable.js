@@ -34,6 +34,8 @@ $(document).ready(function() {
 		$.ajax({
 			url: "/data",
 			success: function(data) {
+				// Clear existing content.
+				table.clear();
 				// Fill table content.
 				table.rows.add(data.data).draw();
 				// Remove loaded Dropzone files on successful load.

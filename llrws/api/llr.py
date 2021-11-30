@@ -50,4 +50,10 @@ class LLR(Resource):
 
         finally:
             # Remove all upload and download files regardless of success / failure.
-            rm_files(filepaths=(benchmark_csv_filepath, score_csv_filepath, output_csv_filepath))
+            rm_files(
+                filepaths=(
+                    benchmark_csv_filepath,
+                    score_csv_filepath,
+                    output_csv_filepath,
+                )
+            )

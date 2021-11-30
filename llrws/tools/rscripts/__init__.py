@@ -39,7 +39,7 @@ def execute_subprocess(script_call):
     """Executes script call via subprocess.Popen and returns subprocess output and return code to caller.
 
     Args:
-        script_call (str): Formatted script call for *NIX bash execution
+        script_call (list): Formatted script call for *NIX bash execution
 
     Returns:
         (subprocess.Popen): Subprocess output
@@ -48,4 +48,5 @@ def execute_subprocess(script_call):
     result = subprocess.Popen(script_call, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # Wait for subprocess to complete prior to fetching return code.
     result.wait()
+    result.terminate()
     return result, result.returncode
