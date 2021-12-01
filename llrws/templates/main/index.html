@@ -1,17 +1,30 @@
 {% extends "layout.html" %}
 
+{% block js %}
+  <script defer src="{{ url_for('static', filename="external/alpine-3.3.2.min.js") }}"></script>
+{% endblock %}
+
 {% block content %}
-  <div class="row dropzone-container">
-    <div class="col">
-      <form id="mave-upload-csv" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
-        <div class="dz-message needsclick">
-          Drop <strong>Benchmark CSV</strong> and <strong>Score CSV</strong> files here or click to upload.
+  <div id="score-accordion" class="position-relative border border-top-0" x-data="{selected:null}">
+    <button type="button" class="w-100 bg-white" @click="selected !== 1 ? selected = 1 : selected = null">
+      <div class="d-flex justify-content-between">
+        <span class="accordion-desc bg-primary"><i class="far fa-hand-pointer"></i>&nbsp UPLOAD FILES</span>
+      </div>
+    </button>
+    <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
+      <div class="row dropzone-container">
+        <div class="col">
+          <form id="mave-upload-csv" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
+            <div class="dz-message needsclick">
+              Drop <strong>Benchmark CSV</strong> and <strong>Score CSV</strong> files here or click to upload.
+            </div>
+          </form>
         </div>
-      </form>
-      <div class="mave-button-wrapper">
-        <input id="mave-button-submit" type="submit" value="Get MAVE" class="btn btn-primary" onclick="this.blur();" disabled></input>
       </div>
     </div>
+  </div>
+  <div class="mave-button-wrapper">
+    <input id="mave-button-submit" type="submit" value="Get MAVE" class="btn btn-primary" onclick="this.blur();" disabled></input>
   </div>
   <table id="data" class="display compact table table-striped" width="100%">
     <thead>
