@@ -1,9 +1,15 @@
+/**
+ * All var(--*) variables are sourced from css/main.css
+ */
+
+
 function invokeJobReady() {
     /**
      * Sets border color of #mave-upload-csv element to green and enables
      * submit button.
      */
-    invokeBorderColor("rgb(52, 168, 83)");
+    invokeBorderColor("var(--success-color)");
+    invokeFileStatus(".file-valid");
     setDefaultButtonState();
     $('#mave-button-submit').prop('disabled', false);
 }
@@ -13,7 +19,8 @@ function invokeJobSuspension() {
      * Sets border color of #mave-upload-csv element to red and disables
      * submit button.
      */
-    invokeBorderColor("rgb(220, 53, 69)");
+    invokeBorderColor("var(--failure-color)");
+    invokeFileStatus(".file-invalid");
     $('#mave-button-submit').prop('disabled', true);
 }
 
@@ -22,7 +29,8 @@ function invokeJobOpen() {
      * Sets border color of #mave-upload-csv element to blue and disables
      * submit button.
      */
-    invokeBorderColor("rgb(0, 135, 247)");
+    invokeBorderColor("var(--neutral-color)");
+    invokeFileStatusHidden();
     $('#mave-button-submit').prop('disabled', true);
 }
 
@@ -34,6 +42,28 @@ function invokeBorderColor(color) {
     setTimeout(function(){
         $("#mave-upload-csv").css("border-color", color);
     }, 200);
+}
+
+function invokeFileStatus(selector) {
+    /**
+     * Sets selector CSS attribute "visibility" to "visible"
+     * @param  {[string]} selector Selector to make visible.
+     * @param  {[string]} visibility Visibility attribute.
+     */
+    invokeFileStatusHidden();
+    setTimeout(function(){
+        $(selector).show();
+    }, 200);
+}
+
+function invokeFileStatusHidden() {
+    /**
+     * Sets the following selector CSS classes visibility to hidden:
+     * - .file-valid
+     * - .file-invalid
+     */
+    $(".file-valid").hide();
+    $(".file-invalid").hide();
 }
 
 function setLoadingButtonState() {

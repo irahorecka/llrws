@@ -9,6 +9,8 @@
     <button type="button" class="w-100 bg-white" @click="selected !== 1 ? selected = 1 : selected = null">
       <div class="d-flex justify-content-between">
         <span class="accordion-desc bg-primary"><i class="far fa-hand-pointer"></i>&nbsp UPLOAD FILES</span>
+        <span class="accordion-file-status file-valid"><i class="far fa-check-circle fa-lg"></i></span>
+        <span class="accordion-file-status file-invalid"><i class="far fa-times-circle fa-lg"></i></span>
       </div>
     </button>
     <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
