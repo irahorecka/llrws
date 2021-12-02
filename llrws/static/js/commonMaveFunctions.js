@@ -52,8 +52,8 @@ function invokeFileStatus(selector) {
      */
     invokeFileStatusHidden();
     setTimeout(function(){
-        $(selector).show();
-    }, 200);
+        $(selector).fadeIn(200);
+    }, 100);
 }
 
 function invokeFileStatusHidden() {
@@ -62,8 +62,10 @@ function invokeFileStatusHidden() {
      * - .file-valid
      * - .file-invalid
      */
-    $(".file-valid").hide();
-    $(".file-invalid").hide();
+     setTimeout(function(){
+        $(".file-valid").fadeOut(200);
+        $(".file-invalid").fadeOut(200);
+    }, 100);
 }
 
 function setLoadingButtonState() {

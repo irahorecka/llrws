@@ -1,17 +1,10 @@
-import json
 import os
 
-from llrws.tools.mave.scoresets import SCORESETS_PATH
+from llrws.tools.mave.scoresets import read_json, SCORESETS_JSON_DIR
 
 
 def query_scoresets_by_gene_name(gene_name):
-    genename_scoresets_filepath = os.path.join(SCORESETS_PATH, "genename_scoresets.json")
-    genename_scoresets = read_json(genename_scoresets_filepath)
+    gene_name_scoresets_filepath = os.path.join(SCORESETS_JSON_DIR, "genename_scoresets.json")
+    gene_name_scoresets = read_json(gene_name_scoresets_filepath)
 
-    return genename_scoresets.get(gene_name.lower(), [])
-
-
-def read_json(json_filepath):
-    with open(json_filepath) as f:
-        scoresets = json.load(f)
-    return scoresets
+    return gene_name_scoresets.get(gene_name.lower(), [])
