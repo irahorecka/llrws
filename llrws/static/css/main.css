@@ -75,7 +75,7 @@ span.accordion-desc {
     padding-left: 1rem;
 }
 
-span.accordion-file-status {
+span.file-status {
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -138,7 +138,8 @@ span.file-valid {
     top: 43%;
 }
 
-#mave-upload-csv {
+#benchmark-upload-csv,
+#score-upload-csv {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -149,7 +150,7 @@ span.file-valid {
     padding-top: 1rem;
     padding-bottom: 2rem;
     margin: auto;
-    max-width: 100px;
+    max-width: 135px;
 }
 
 
