@@ -11,14 +11,14 @@ import requests
 from flask import render_template, request, session, url_for, Blueprint
 from flask_cors import cross_origin
 
-from llrws.exceptions import FileValidationError, InvalidCsvSchemaType, InvalidUploadFile
+from llrws.exceptions import FileValidationError, InvalidCsvSchema, InvalidUploadFile
 from llrws.tools.mave import (
     generate_mave_csv_filepaths,
     get_mave_csv_schematype_from_exception,
     rename_mave_csv_file_by_schematype,
 )
 from llrws.tools.mave.tidydata import get_mave_csv_sorted_by_hgvs_pro
-from llrws.tools.mave.validation import get_schema_type
+from llrws.tools.mave.validation import validate_benchmark_schema, validate_score_schema
 from llrws.tools.web import rm_files, validate_file_properties
 
 main = Blueprint("main", __name__)
@@ -37,8 +37,8 @@ def index():
 
 
 @cross_origin(supports_credentials=True)
-@main.route("/upload", methods=["POST"])
-def upload():
+@main.route("/upload/score", methods=["POST"])
+def upload_score():
     """Demo upload validation for CSV files."""
     try:
         upload_file = request.files["file"]
@@ -46,6 +46,23 @@ def upload():
         # Raised when user deletes file from dropzone.
         return "No file", 200
 
+    return validate_and_save_mave_csv_file_upload(upload_file, validate_score_schema, "score")
+
+
+@cross_origin(supports_credentials=True)
+@main.route("/upload/benchmark", methods=["POST"])
+def upload_benchmark():
+    """Demo upload validation for CSV files."""
+    try:
+        upload_file = request.files["file"]
+    except KeyError:
+        # Raised when user deletes file from dropzone.
+        return "No file", 200
+
+    return validate_and_save_mave_csv_file_upload(upload_file, validate_benchmark_schema, "benchmark")
+
+
+def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schema_type):
     upload_csv_filepath = generate_mave_csv_filepaths()["upload"]
     try:
         # Check if the general file properties are valid...
@@ -57,11 +74,10 @@ def upload():
         # ... then check if the CSV content is valid.
         upload_file.save(upload_csv_filepath)
         try:
-            schema_type = get_schema_type(upload_csv_filepath)
-        except InvalidCsvSchemaType:
-            raise InvalidUploadFile("Uploaded CSV file is not recognized.")
+            validation_schema(upload_csv_filepath)
+        except InvalidCsvSchema:
+            raise InvalidUploadFile(f"Uploaded CSV file is not recognized as a {schema_type.title()} CSV file.")
 
-        # Schema type was found - rename uploaded file to sync with schema type.
         rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=session["uid"])
         return "Upload successful", 200
 

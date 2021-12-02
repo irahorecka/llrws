@@ -5,7 +5,7 @@ from llrws.tools.mave.api import scoresets
 from llrws.tools.mave.scoresets import write_to_json, SCORESETS_JSON_DIR
 
 
-def generate_scoresets_json_files_from_mavedb():
+def generate_scoresets_json_from_mavedb():
     scoresets = get_all_scoresets_as_json_from_mavedb()
     scoresets_json_filepath = os.path.join(SCORESETS_JSON_DIR, "scoresets.json")
     write_to_json(scoresets, scoresets_json_filepath)
