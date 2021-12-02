@@ -8,7 +8,7 @@ Flask blueprint to handle routes.
 from uuid import uuid4
 
 import requests
-from flask import render_template, request, session, url_for, Blueprint
+from flask import render_template, make_response, request, url_for, Blueprint
 from flask_cors import cross_origin
 
 from llrws.exceptions import FileValidationError, InvalidCsvSchema, InvalidUploadFile
@@ -27,13 +27,13 @@ main = Blueprint("main", __name__)
 @main.route("/")
 def index():
     """Landing page of LLRWS."""
-    # Generate a unique session ID whenever user hits landing page
-    session["uid"] = uuid4()
-
     content = {
         "title": "Home | LLRWS",
     }
-    return render_template("main/index.html", content=content)
+    response = make_response(render_template("main/index.html", content=content))
+    # Generate a unique cookie ID whenever user hits landing page
+    response.set_cookie("uid", str(uuid4()))
+    return response
 
 
 @cross_origin(supports_credentials=True)
@@ -78,7 +78,7 @@ def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schem
         except InvalidCsvSchema:
             raise InvalidUploadFile(f"Uploaded CSV file is not recognized as a {schema_type.title()} CSV file.")
 
-        rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=session["uid"])
+        rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=request.cookies.get("uid"))
         return "Upload successful", 200
 
     except InvalidUploadFile as e:
@@ -92,7 +92,7 @@ def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schem
 def data():
     """AJAX: Load CSV data when called."""
     # Get CSV filepaths using UID stored in session
-    mave_csv_filepaths = generate_mave_csv_filepaths(session_id=session["uid"])
+    mave_csv_filepaths = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))
     mave_benchmark_file = mave_csv_filepaths["benchmark"]
     mave_score_file = mave_csv_filepaths["score"]
     try:
@@ -103,14 +103,12 @@ def data():
     except FileNotFoundError as e:
         error_msg = f"{get_mave_csv_schematype_from_exception(str(e)).title()} filetype not found"
         return error_msg, 400
-    try:
-        # Get output LLR CSV stream via internal API POST request.
-        response = requests.post(url_for("api.api_base", _external=True), files=csv_files)
-        response_content = response.content.decode("utf-8")
-        if response.status_code != 200:
-            return response_content, 400
-        sorted_mave_csv_content = get_mave_csv_sorted_by_hgvs_pro(response_content)
-        return {"data": sorted_mave_csv_content}, 200
-    finally:
-        # Generate a new session UID after button click.
-        session["uid"] = uuid4()
+
+    # Get output LLR CSV stream via internal API POST request.
+    response = requests.post(url_for("api.api_base", _external=True), files=csv_files)
+    response_content = response.content.decode("utf-8")
+    if response.status_code != 200:
+        return response_content, 400
+
+    sorted_mave_csv_content = get_mave_csv_sorted_by_hgvs_pro(response_content)
+    return {"data": sorted_mave_csv_content}, 200
