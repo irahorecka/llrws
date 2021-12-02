@@ -1,70 +1,73 @@
 /**
- * All var(--*) variables are sourced from css/main.css
+ * All var(--*) variables in this file are sourced from css/main.css
  */
 
 
-function invokeJobReady() {
+function invokeJobReady(borderSelector, fileStatusSelector) {
     /**
-     * Sets border color of #mave-upload-csv element to green and enables
+     * Sets border color of Dropzone element to green and enables
      * submit button.
+     * @param  {[string]} borderSelector Border selector to change color
+     * @param  {[string]} fileStatusSelector File status selector to make visible
      */
-    invokeBorderColor("var(--success-color)");
-    invokeFileStatus(".file-valid");
+    setBorderColor(borderSelector, "var(--success-color)");
+    setFileStatusVisible(fileStatusSelector);
     setDefaultButtonState();
     $('#mave-button-submit').prop('disabled', false);
 }
 
-function invokeJobSuspension() {
+function invokeJobSuspension(borderSelector, fileStatusSelector) {
     /**
-     * Sets border color of #mave-upload-csv element to red and disables
+     * Sets border color of Dropzone element to red and disables
      * submit button.
+     * @param  {[string]} borderSelector Border selector to change color
+     * @param  {[string]} fileStatusSelector File status selector to make visible
      */
-    invokeBorderColor("var(--failure-color)");
-    invokeFileStatus(".file-invalid");
+    setBorderColor(borderSelector, "var(--failure-color)");
+    setFileStatusVisible(fileStatusSelector);
     $('#mave-button-submit').prop('disabled', true);
 }
 
-function invokeJobOpen() {
+function invokeJobOpen(borderSelector, fileStatusSelector) {
     /**
-     * Sets border color of #mave-upload-csv element to blue and disables
+     * Sets border color of Dropzone element to blue and disables
      * submit button.
+     * @param  {[string]} borderSelector Border selector to change color
+     * @param  {[string]} fileStatusSelector File status selector to hide
      */
-    invokeBorderColor("var(--neutral-color)");
-    invokeFileStatusHidden();
+    setBorderColor(borderSelector, "var(--neutral-color)");
+    setFileStatusHidden(fileStatusSelector);
     $('#mave-button-submit').prop('disabled', true);
 }
 
-function invokeBorderColor(color) {
+function setBorderColor(borderSelector, borderColor) {
     /**
-     * Sets border color of #mave-upload-csv element
-     * @param  {[string]} color Color to set border color.
+     * Sets border color of `borderSelector` element to `color`
+     * @param  {[string]} color Color to set border color
      */
     setTimeout(function(){
-        $("#mave-upload-csv").css("border-color", color);
+        $(borderSelector).css("border-color", borderColor);
     }, 200);
 }
 
-function invokeFileStatus(selector) {
+function setFileStatusVisible(fileStatusSelector) {
     /**
-     * Sets selector CSS attribute "visibility" to "visible"
-     * @param  {[string]} selector Selector to make visible.
-     * @param  {[string]} visibility Visibility attribute.
+     * Sets `fileStatusSelector` visibility to visible
+     * @param  {[string]} fileStatusSelector Selector to make visible
      */
-    invokeFileStatusHidden();
+    setFileStatusHidden(fileStatusSelector);
     setTimeout(function(){
-        $(selector).fadeIn(200);
+        $(fileStatusSelector).fadeIn(200);
     }, 100);
 }
 
-function invokeFileStatusHidden() {
+function setFileStatusHidden(fileStatusSelector) {
     /**
-     * Sets the following selector CSS classes visibility to hidden:
-     * - .file-valid
-     * - .file-invalid
+     * Sets `fileStatusSelector` visibility to hidden
+     * * @param  {[string]} fileStatusSelector Selector to hide
      */
      setTimeout(function(){
-        $(".file-valid").fadeOut(200);
-        $(".file-invalid").fadeOut(200);
+        $(fileStatusSelector).fadeOut(200);
     }, 100);
 }
 
@@ -77,9 +80,9 @@ function setLoadingButtonState() {
 
 function setDefaultButtonState() {
     /**
-     * Sets MAVE submit button text to 'Get MAVE' and disables button.
+     * Sets MAVE submit button text to 'Get MAVE LLR' and disables button.
      */
-	$('#mave-button-submit').val('Get MAVE').prop('disabled', true);
+	$('#mave-button-submit').val('Get MAVE LLR').prop('disabled', true);
 }
 
 function scrollToBottomOfPage() {

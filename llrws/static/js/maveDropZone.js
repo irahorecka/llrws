@@ -1,50 +1,75 @@
 Dropzone.autoDiscover = false;
 
-$("#mave-upload-csv").dropzone({
+$("#score-upload-csv").dropzone({
     // Allow removal up uploaded files.
     addRemoveLinks: true,
-    // We only need one benchmark and one score CSV file.
-    maxFiles: 2,
+    maxFiles: 1,
     init: function() {
         // Get intance of Dropzone object.
-        var maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
-
+        var scoreCSVDropzone = Dropzone.forElement("#score-upload-csv");
         this.on("error", function(file, response) {
-            invokeJobSuspension();
+            invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
         });
-
         this.on("maxfilesexceeded", function(file, response) {
             this.removeFile(file);
         });
-
         this.on("removedfile", function(file, response) {
-            if (anyErrorFilesPresent()) {
-                invokeJobSuspension();
-                return;
-            }
-            // Why default to invokeJobOpen()? A: You'll never be in a state to submit files for MAVE
-            // processing AFTER you remove your file(s). I.e., Number of files after removal will always be
-            // less than value of maveCSVDropzone.options.maxFiles.
-            invokeJobOpen();
+            executeOnRemovedFile("#score-upload-csv", "#score-accordion span.file-status");
         });
-
         this.on("success", function(file, response) {
-            // On successful upload, the number of uploads should equal the max size
-            // and there should be no error files present.
-            if (maveCSVDropzone.files.length == maveCSVDropzone.options.maxFiles) {
-                if (anyErrorFilesPresent() || isDuplicateFile(maveCSVDropzone)) {
-                    invokeJobSuspension();
-                    return;
-                }
-                invokeJobReady();
-                return;
-            }
-            // At this point, we know a 200 response was received from the server
-            // - therefore we assume we have ONE valid file in the Dropzone instance.
-            invokeJobOpen();
+            executeOnSuccess(scoreCSVDropzone, "#score-upload-csv", "#score-accordion span.file-valid");
         });
     }
 });
+
+$("#benchmark-upload-csv").dropzone({
+    // Allow removal up uploaded files.
+    addRemoveLinks: true,
+    maxFiles: 1,
+    init: function() {
+        // Get intance of Dropzone object.
+        var benchmarkCSVDropzone = Dropzone.forElement("#benchmark-upload-csv");
+        this.on("error", function(file, response) {
+            invokeJobSuspension("#benchmark-upload-csv", "#benchmark-accordion span.file-invalid");
+        });
+        this.on("maxfilesexceeded", function(file, response) {
+            this.removeFile(file);
+        });
+        this.on("removedfile", function(file, response) {
+            executeOnRemovedFile("#benchmark-upload-csv", "#benchmark-accordion span.file-status");
+        });
+        this.on("success", function(file, response) {
+            executeOnSuccess(benchmarkCSVDropzone, "#benchmark-upload-csv", "#benchmark-accordion span.file-valid");
+        });
+    }
+});
+
+function executeOnRemovedFile(DropzoneElementID, fileStatusSelector) {
+    if (anyErrorFilesPresent()) {
+        invokeJobSuspension(DropzoneElementID, fileStatusSelector);
+        return;
+    }
+    // Why default to invokeJobOpen()? A: You'll never be in a state to submit files for MAVE
+    // processing AFTER you remove your file(s). I.e., Number of files after removal will always be
+    // less than value of DropzoneObj.options.maxFiles.
+    invokeJobOpen(DropzoneElementID, fileStatusSelector);
+}
+
+function executeOnSuccess(DropzoneObj, DropzoneElementID, fileStatusSelector) {
+    // On successful upload, the number of uploads should equal the max size
+    // and there should be no error files present.
+    if (DropzoneObj.files.length == DropzoneObj.options.maxFiles) {
+        if (anyErrorFilesPresent() || isDuplicateFile(DropzoneObj)) {
+            invokeJobSuspension(DropzoneElementID, fileStatusSelector);
+            return;
+        }
+        invokeJobReady(DropzoneElementID, fileStatusSelector);
+        return;
+    }
+    // At this point, we know a 200 response was received from the server
+    // - therefore we assume we have ONE valid file in the Dropzone instance.
+    invokeJobOpen(DropzoneElementID, fileStatusSelector);
+}
 
 function anyErrorFilesPresent() {
     /**
