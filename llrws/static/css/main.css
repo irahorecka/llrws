@@ -54,8 +54,10 @@ p {
 }
 
 /* START Alpine JS */
-#score-accordion {
+#score-accordion,
+#benchmark-accordion {
     border-radius: var(--alpine-border-radius);
+    margin-bottom: 1rem;
 }
 
 #score-accordion > button,
@@ -105,6 +107,8 @@ span.file-valid {
 .dropzone-container {
     display: flex;
     justify-content: space-between;
+    margin-right: 1rem;
+    margin-left: 1rem;
     padding-top: 3rem;
     padding-bottom: 6rem;
 }

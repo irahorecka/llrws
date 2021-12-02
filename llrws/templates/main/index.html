@@ -10,42 +10,44 @@
 {% endblock %}
 
 {% block content %}
-  <div id="score-accordion" class="position-relative border border-top-0" x-data="{selected:null}">
-    <button type="button" class="w-100 bg-white" @click="selected !== 1 ? selected = 1 : selected = null">
-      <div class="d-flex justify-content-between">
-        <span class="accordion-desc bg-primary"><i class="far fa-hand-pointer"></i>&nbsp SCORESETS</span>
-        <span class="file-status file-valid"><i class="far fa-check-circle fa-lg"></i></span>
-        <span class="file-status file-invalid"><i class="far fa-times-circle fa-lg"></i></span>
-      </div>
-    </button>
-    <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
-      <div class="row dropzone-container">
-        <div class="col">
-          <form id="score-upload-csv" action="{{ url_for('main.upload_score') }}" class="dropzone needsclick">
-            <div class="dz-message needsclick">
-              Drop <strong>Score CSV</strong> file here or click to upload.
-            </div>
-          </form>
+  <div id="dropzone-accordion" x-data="{selected:null}">
+    <div id="score-accordion" class="position-relative border border-top-0">
+      <button type="button" class="w-100 bg-white" @click="selected !== 1 ? selected = 1 : selected = null">
+        <div class="d-flex justify-content-between">
+          <span class="accordion-desc bg-primary"><i class="far fa-hand-pointer"></i>&nbsp SCORESET</span>
+          <span class="file-status file-valid"><i class="far fa-check-circle fa-lg"></i></span>
+          <span class="file-status file-invalid"><i class="far fa-times-circle fa-lg"></i></span>
+        </div>
+      </button>
+      <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
+        <div class="row dropzone-container">
+          <div class="col">
+            <form id="score-upload-csv" action="{{ url_for('main.upload_score') }}" class="dropzone needsclick">
+              <div class="dz-message needsclick">
+                Drop <strong>Scoreset CSV</strong> file here or click to upload.
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div id="benchmark-accordion" class="position-relative border border-top-0" x-data="{selected:null}">
-    <button type="button" class="w-100 bg-white" @click="selected !== 1 ? selected = 1 : selected = null">
-      <div class="d-flex justify-content-between">
-        <span class="accordion-desc bg-primary"><i class="far fa-hand-pointer"></i>&nbsp BENCHMARK</span>
-        <span class="file-status file-valid"><i class="far fa-check-circle fa-lg"></i></span>
-        <span class="file-status file-invalid"><i class="far fa-times-circle fa-lg"></i></span>
-      </div>
-    </button>
-    <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
-      <div class="row dropzone-container">
-        <div class="col">
-          <form id="benchmark-upload-csv" action="{{ url_for('main.upload_benchmark') }}" class="dropzone needsclick">
-            <div class="dz-message needsclick">
-              Drop <strong>Benchmark CSV</strong> file here or click to upload.
-            </div>
-          </form>
+    <div id="benchmark-accordion" class="position-relative border border-top-0">
+      <button type="button" class="w-100 bg-white" @click="selected !== 2 ? selected = 2 : selected = null">
+        <div class="d-flex justify-content-between">
+          <span class="accordion-desc bg-primary"><i class="far fa-hand-pointer"></i>&nbsp BENCHMARK</span>
+          <span class="file-status file-valid"><i class="far fa-check-circle fa-lg"></i></span>
+          <span class="file-status file-invalid"><i class="far fa-times-circle fa-lg"></i></span>
+        </div>
+      </button>
+      <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container2" x-bind:style="selected == 2 ? 'max-height: ' + $refs.container2.scrollHeight + 'px' : ''">
+        <div class="row dropzone-container">
+          <div class="col">
+            <form id="benchmark-upload-csv" action="{{ url_for('main.upload_benchmark') }}" class="dropzone needsclick">
+              <div class="dz-message needsclick">
+                Drop <strong>Benchmark CSV</strong> file here or click to upload.
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
