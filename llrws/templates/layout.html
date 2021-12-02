@@ -8,13 +8,11 @@
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
   <link rel="stylesheet" href="{{ url_for('static', filename='external/fontawesome-5.15.4/css/all.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='external/bootstrap-5.0.2/css/bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='external/dropzone-5.7.1/dropzone.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='external/DataTables-1.11.3/css/dataTables.bootstrap5.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='external/mvp.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/latolatinfonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='external/latolatinfonts.css') }}">
+  {%- block css -%}{%- endblock -%}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  {%- block css -%}{%- endblock -%}
   <link class="img-fluid rounded-circle float-left mr-2" rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/favicon.ico') }}">
   <script src="{{ url_for('static', filename="external/jquery-3.6.0.min.js") }}"></script>
   <script src="{{ url_for('static', filename="external/bootstrap-5.0.2/js/bootstrap.min.js") }}"></script>
