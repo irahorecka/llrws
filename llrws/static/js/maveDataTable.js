@@ -48,16 +48,21 @@ $(document).ready(function() {
 				switch(jqXHR.status) {
 					case 400:
 						alert("Error [400]: " + jqXHR.responseText);
-						invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
-						invokeJobSuspension("#benchmark-upload-csv", "#benchmark-accordion span.file-invalid");
+						invokeOnAjaxError();
 						break;
 					case 500:
 						alert("Error [500]: " + jqXHR.responseText);
-						invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
-						invokeJobSuspension("#benchmark-upload-csv", "#benchmark-accordion span.file-invalid");
+						invokeOnAjaxError();
 				}
 				setDefaultButtonState();
 			},
 		});
 	});
+
+	function invokeOnAjaxError() {
+		$("#score-accordion span.file-valid").hide();
+		$("#benchmark-accordion span.file-valid").hide();
+		invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
+		invokeJobSuspension("#benchmark-upload-csv", "#benchmark-accordion span.file-invalid");
+	}
 });
