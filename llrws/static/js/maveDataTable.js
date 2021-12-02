@@ -28,9 +28,9 @@ $(document).ready(function() {
 
 	// Get table content on button click.
 	$("#mave-button-submit").click(function() {
-		maveCSVDropzone = Dropzone.forElement("#mave-upload-csv");
-		reuploadDropzoneFilesSynchronously(maveCSVDropzone);
-		// After synchronous files upload, call an AJAX GET request to /data.
+		setLoadingButtonState();
+		scoreCSVDropzone = Dropzone.forElement("#score-upload-csv");
+		benchmarkCSVDropzone = Dropzone.forElement("#benchmark-upload-csv");
 		$.ajax({
 			url: "/data",
 			success: function(data) {
@@ -39,7 +39,8 @@ $(document).ready(function() {
 				// Fill table content.
 				table.rows.add(data.data).draw();
 				// Remove loaded Dropzone files on successful load.
-				maveCSVDropzone.removeAllFiles(true);
+				scoreCSVDropzone.removeAllFiles(true);
+				benchmarkCSVDropzone.removeAllFiles(true);
 				setDefaultButtonState();
 				scrollToBottomOfPage();
 			},
@@ -47,39 +48,16 @@ $(document).ready(function() {
 				switch(jqXHR.status) {
 					case 400:
 						alert("Error [400]: " + jqXHR.responseText);
-						invokeJobSuspension();
+						invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
+						invokeJobSuspension("#benchmark-upload-csv", "#benchmark-accordion span.file-invalid");
 						break;
 					case 500:
 						alert("Error [500]: " + jqXHR.responseText);
-						invokeJobSuspension();
+						invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
+						invokeJobSuspension("#benchmark-upload-csv", "#benchmark-accordion span.file-invalid");
 				}
 				setDefaultButtonState();
 			},
 		});
 	});
-
-	function reuploadDropzoneFilesSynchronously(DropzoneObj) {
-		/**
-		 * SYNCHRONOUSLY resubmit loaded documents in Dropzone instance to override persisted
-		 * temp files stored on server. The temp files are caused by the user uploading and
-		 * removing files like a maniac from the Dropzone instance.
-		 * @param  {[object]} DropzoneObj An instance of the Dropzone object.
-		 */
-		for (let i = 0; i < DropzoneObj.options.maxFiles; i++) {
-			var formData = new FormData();
-			formData.append('file', DropzoneObj.files[i]);
-			$.ajax({
-				async: false,
-				url : '/upload',
-				type : 'POST',
-				data : formData,
-				processData: false,  // tell jQuery not to process the data
-				contentType: false,  // tell jQuery not to set contentType
-				success : function(data) {
-					setLoadingButtonState();
-				}
-			});
-		}
-	}
-
 });

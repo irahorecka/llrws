@@ -21,7 +21,7 @@
     <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
       <div class="row dropzone-container">
         <div class="col">
-          <form id="score-upload-csv" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
+          <form id="score-upload-csv" action="{{ url_for('main.upload_score') }}" class="dropzone needsclick">
             <div class="dz-message needsclick">
               Drop <strong>Score CSV</strong> file here or click to upload.
             </div>
@@ -41,7 +41,7 @@
     <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
       <div class="row dropzone-container">
         <div class="col">
-          <form id="benchmark-upload-csv" action="{{ url_for('main.upload') }}" class="dropzone needsclick">
+          <form id="benchmark-upload-csv" action="{{ url_for('main.upload_benchmark') }}" class="dropzone needsclick">
             <div class="dz-message needsclick">
               Drop <strong>Benchmark CSV</strong> file here or click to upload.
             </div>
