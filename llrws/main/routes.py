@@ -46,7 +46,11 @@ def upload_score():
         # Raised when user deletes file from dropzone.
         return "No file", 200
 
-    return validate_and_save_mave_csv_file_upload(upload_file, validate_score_schema, "score")
+    try:
+        validate_and_save_mave_csv_file_upload(upload_file, validate_score_schema, "score")
+        return "Upload successful", 200
+    except InvalidUploadFile as e:
+        return str(e), 400
 
 
 @cross_origin(supports_credentials=True)
@@ -56,10 +60,13 @@ def upload_benchmark():
     try:
         upload_file = request.files["file"]
     except KeyError:
-        # Raised when user deletes file from dropzone.
         return "No file", 200
 
-    return validate_and_save_mave_csv_file_upload(upload_file, validate_benchmark_schema, "benchmark")
+    try:
+        validate_and_save_mave_csv_file_upload(upload_file, validate_benchmark_schema, "benchmark")
+        return "Upload successful", 200
+    except InvalidUploadFile as e:
+        return str(e), 400
 
 
 def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schema_type):
@@ -79,11 +86,6 @@ def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schem
             raise InvalidUploadFile(f"Uploaded CSV file is not recognized as a {schema_type.title()} CSV file.")
 
         rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=request.cookies.get("uid"))
-        return "Upload successful", 200
-
-    except InvalidUploadFile as e:
-        return str(e), 400
-
     finally:
         rm_files((upload_csv_filepath,))
 
@@ -91,7 +93,7 @@ def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schem
 @main.route("/data")
 def data():
     """AJAX: Load CSV data when called."""
-    # Get CSV filepaths using UID stored in session
+    # Get CSV filepaths using UID stored in cookie session
     mave_csv_filepaths = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))
     mave_benchmark_file = mave_csv_filepaths["benchmark"]
     mave_score_file = mave_csv_filepaths["score"]
