@@ -28,7 +28,7 @@ $(document).ready(function() {
 
 	// Get table content on button click.
 	$("#mave-button-submit").click(function() {
-		setLoadingButtonState();
+		setLoadingButtonState('#mave-button-submit');
 		scoreCSVDropzone = Dropzone.forElement("#score-upload-csv");
 		benchmarkCSVDropzone = Dropzone.forElement("#benchmark-upload-csv");
 		$.ajax({
@@ -41,7 +41,7 @@ $(document).ready(function() {
 				// Remove loaded Dropzone files on successful load.
 				scoreCSVDropzone.removeAllFiles(true);
 				benchmarkCSVDropzone.removeAllFiles(true);
-				setDefaultButtonState();
+				setDefaultButtonState('#mave-button-submit');
 				scrollToBottomOfPage();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {

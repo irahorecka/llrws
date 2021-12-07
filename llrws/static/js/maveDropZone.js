@@ -8,15 +8,21 @@ $("#score-upload-csv").dropzone({
         // Get intance of Dropzone object.
         var scoreCSVDropzone = Dropzone.forElement("#score-upload-csv");
         this.on("error", function(file, response) {
+            setFileStatusHidden('#score-accordion span.file-valid');
+            setFileStatusHidden('#score-accordion span.file-invalid');
             invokeJobSuspension("#score-upload-csv", "#score-accordion span.file-invalid");
         });
         this.on("maxfilesexceeded", function(file, response) {
             this.removeFile(file);
         });
         this.on("removedfile", function(file, response) {
+            setFileStatusHidden('#score-accordion span.file-valid');
+            setFileStatusHidden('#score-accordion span.file-invalid');
             executeOnRemovedFile("#score-upload-csv", "#score-accordion span.file-status");
         });
         this.on("success", function(file, response) {
+            setFileStatusHidden('#score-accordion span.file-valid');
+            setFileStatusHidden('#score-accordion span.file-invalid');
             executeOnSuccess(scoreCSVDropzone, "#score-upload-csv", "#score-accordion span.file-valid");
         });
     }

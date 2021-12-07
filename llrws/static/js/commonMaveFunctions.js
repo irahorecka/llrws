@@ -71,18 +71,18 @@ function setFileStatusHidden(fileStatusSelector) {
     }, 100);
 }
 
-function setLoadingButtonState() {
+function setLoadingButtonState(buttonSelector) {
     /**
-     * Sets MAVE submit button text to 'Loading...' and disables button.
+     * Sets button text to 'Loading...' and disables button.
      */
-	$('#mave-button-submit').val('Loading...').prop('disabled', true);
+	$(buttonSelector).val('Loading...').prop('disabled', true);
 }
 
-function setDefaultButtonState() {
+function setDefaultButtonState(buttonSelector) {
     /**
-     * Sets MAVE submit button text to 'Get MAVE LLR' and disables button.
+     * Sets button text to 'Get MAVE LLR' and disables button.
      */
-	$('#mave-button-submit').val('Get MAVE LLR').prop('disabled', true);
+	$(buttonSelector).val('Get MAVE LLR').prop('disabled', true);
 }
 
 function scrollToBottomOfPage() {
