@@ -19,7 +19,9 @@ from llrws.tools.mave import (
 )
 from llrws.tools.mave.tidydata import get_mave_csv_sorted_by_hgvs_pro
 from llrws.tools.mave.validation import validate_benchmark_schema, validate_score_schema
-from llrws.tools.web import rm_files, validate_file_properties
+from llrws.tools.mave.api import get_scoresets_csv_stream_from_urn
+from llrws.tools.mave.scoresets.parse_scoresets import query_available_urns_by_gene_name
+from llrws.tools.web import rm_files, save_csv_stream_to_csv_path, validate_file_properties
 
 main = Blueprint("main", __name__)
 
@@ -90,17 +92,42 @@ def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schem
         rm_files((upload_csv_filepath,))
 
 
+@main.route("/search/mavedb/gene", methods=["POST"])
+def search_mavedb_gene():
+    gene = request.form.get("gene", "").lower()
+    if not gene:
+        return render_template("main/urn.html", urns=[])
+    gene_urn_pair = [
+        f"{list(entry.keys()).pop().title()} :: {list(entry.values()).pop()}"
+        for entry in query_available_urns_by_gene_name(gene)
+    ]
+    return render_template("main/urn.html", urns=sorted(gene_urn_pair))
+
+
+@main.route("/search/mavedb/score", methods=["POST"])
+def download_mavedb_score():
+    urn = request.form["urn"].split("::")[-1].strip()
+    score_csv_stream = get_scoresets_csv_stream_from_urn(urn)
+    mave_csv_filepaths = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))
+    mave_score_filepath = mave_csv_filepaths["score"]
+    save_csv_stream_to_csv_path(score_csv_stream, csv_path=mave_score_filepath)
+
+    response = make_response("Scoreset generated")
+    response.headers["HX-Trigger-After-Swap"] = "loadScore"
+    return response, 200
+
+
 @main.route("/data")
 def data():
     """AJAX: Load CSV data when called."""
     # Get CSV filepaths using UID stored in cookie session
     mave_csv_filepaths = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))
-    mave_benchmark_file = mave_csv_filepaths["benchmark"]
-    mave_score_file = mave_csv_filepaths["score"]
+    mave_benchmark_filepath = mave_csv_filepaths["benchmark"]
+    mave_score_filepath = mave_csv_filepaths["score"]
     try:
         csv_files = {
-            "benchmark_file": open(mave_benchmark_file, "rb"),
-            "score_file": open(mave_score_file, "rb"),
+            "benchmark_file": open(mave_benchmark_filepath, "rb"),
+            "score_file": open(mave_score_filepath, "rb"),
         }
     except FileNotFoundError as e:
         error_msg = f"{get_mave_csv_schematype_from_exception(str(e)).title()} filetype not found"

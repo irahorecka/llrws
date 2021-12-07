@@ -1,4 +1,6 @@
+import csv
 import os
+from io import StringIO
 
 from flask import send_file
 
@@ -16,17 +18,17 @@ def send_file_for_download(filepath, filename, mimetype="text/csv"):
     Returns:
         (flask.wrappers.Response): File object for download
     """
-    worklist = send_file(
+    file = send_file(
         filepath,
         mimetype=mimetype,
         as_attachment=True,
         attachment_filename=filename,
         cache_timeout=-1,
     )
-    worklist.headers["x-filename"] = filename
-    worklist.headers["Access-Control-Expose-Headers"] = "x-filename"
+    file.headers["x-filename"] = filename
+    file.headers["Access-Control-Expose-Headers"] = "x-filename"
 
-    return worklist
+    return file
 
 
 def rm_files(filepaths):
@@ -43,3 +45,9 @@ def rm_files(filepaths):
             os.remove(file)
         except FileNotFoundError:
             pass
+
+
+def save_csv_stream_to_csv_path(csv_stream, csv_path):
+    with open(csv_path, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerows(StringIO(csv_stream))
