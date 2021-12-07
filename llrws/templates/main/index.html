@@ -19,38 +19,40 @@
           <span class="file-status file-invalid"><i class="far fa-times-circle fa-lg"></i></span>
         </div>
       </button>
-      <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
-        <form>
-          <h3>Search a gene, Boy!</h3>
-          <div>
-            <!-- Insert radio buttons / selector elements here -->
-            <input
-              type="text"
-              name="gene"
-              hx-post="/search/mavedb/gene"
-              hx-trigger="keyup changed delay:250ms"
-              hx-indicator="#search-scoreset"
-              hx-target="#urn"
-              placeholder="Search Gene"
-              class="">
-            <span id="search-scoreset" class="htmx-indicator">Searching...</span>
-            <select
-              name="urn"
-              id="urn"
-              class="">
-            {% include 'main/urn.html' %}
-            </select>
-            <input
-              type="submit"
-              name="urn"
-              value="Get Scoreset"
-              hx-indicator="#load-scoreset"
-              hx-post="/search/mavedb/score"
-              hx-trigger="click"
-              class="">
-          </div>
-          <div id="load-scoreset" class="htmx-indicator">Fetching...</div>
-        </form>
+      <div class="position-relative overflow-hidden transition-accordion mh-0 mx-4" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
+        <div class="py-5">
+          <form class="m-auto">
+            <h3>Search a gene!</h3>
+            <div class="d-flex flex-column justify-content-between">
+              <!-- Insert radio buttons / selector elements here -->
+              <input
+                type="text"
+                name="gene"
+                hx-post="/search/mavedb/gene"
+                hx-trigger="keyup changed delay:250ms"
+                hx-indicator="#search-scoreset"
+                hx-target="#urn"
+                placeholder="Search Gene"
+                class="">
+              <span id="search-scoreset" class="htmx-indicator">Searching...</span>
+              <select
+                name="urn"
+                id="urn"
+                class="">
+              {% include 'main/urn.html' %}
+              </select>
+              <input
+                type="submit"
+                name="urn"
+                value="Get Scoreset"
+                hx-indicator="#load-scoreset"
+                hx-post="/search/mavedb/score"
+                hx-trigger="click"
+                class="">
+            </div>
+            <div id="load-scoreset" class="htmx-indicator">Fetching...</div>
+          </form>
+        </div>
         <div class="row dropzone-container">
           <div class="col">
             <form id="score-upload-csv" action="{{ url_for('main.upload_score') }}" class="dropzone needsclick">
@@ -73,8 +75,9 @@
       <div>
         <!-- Insert radio buttons / selector elements here -->
       </div>
-      <div class="position-relative overflow-hidden transition-accordion mh-0" style="" x-ref="container2" x-bind:style="selected == 2 ? 'max-height: ' + $refs.container2.scrollHeight + 'px' : ''">
-        <div class="row dropzone-container">
+      <div class="position-relative overflow-hidden transition-accordion mh-0 mx-4" style="" x-ref="container2" x-bind:style="selected == 2 ? 'max-height: ' + $refs.container2.scrollHeight + 'px' : ''">
+        <!-- Remove padding top style -->
+        <div class="row dropzone-container" style="padding-top: 3rem;">
           <div class="col">
             <form id="benchmark-upload-csv" action="{{ url_for('main.upload_benchmark') }}" class="dropzone needsclick">
               <div class="dz-message needsclick">
@@ -118,6 +121,8 @@
       setFileStatusHidden('#benchmark-accordion span.file-valid');
       setFileStatusHidden('#benchmark-accordion span.file-invalid');
       setFileStatusVisible("#score-accordion span.file-valid");
+      // Fade out dropzone if loadScore was called
+      $('#score-accordion .dropzone-container').fadeOut();
     })
   </script>
 {% endblock %}
