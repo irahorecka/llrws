@@ -48,6 +48,7 @@ def rm_files(filepaths):
 
 
 def save_csv_stream_to_csv_path(csv_stream, csv_path):
+    reader = csv.reader(StringIO(csv_stream), skipinitialspace=True)
     with open(csv_path, "w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerows(StringIO(csv_stream))
+        writer.writerows(reader)

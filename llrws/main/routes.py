@@ -106,11 +106,19 @@ def search_mavedb_gene():
 
 @main.route("/search/mavedb/score", methods=["POST"])
 def download_mavedb_score():
+    # Get URN from string, e.g.: 'urn:mavedb:00000069-a-1' from 'Ace2 :: urn:mavedb:00000069-a-1'
     urn = request.form["urn"].split("::")[-1].strip()
     score_csv_stream = get_scoresets_csv_stream_from_urn(urn)
     mave_csv_filepaths = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))
     mave_score_filepath = mave_csv_filepaths["score"]
     save_csv_stream_to_csv_path(score_csv_stream, csv_path=mave_score_filepath)
+    # This actually reformats CSV and re-saves to provided filepath
+    # Doesn't really follow the principle of least surprise... refactor later
+    try:
+        validate_score_schema(mave_score_filepath)
+    except InvalidCsvSchema as e:
+        print(e)
+        return "Score file from MaveDB failed validation.", 400
 
     response = make_response("Scoreset generated")
     response.headers["HX-Trigger-After-Swap"] = "loadScore"
@@ -130,7 +138,7 @@ def data():
             "score_file": open(mave_score_filepath, "rb"),
         }
     except FileNotFoundError as e:
-        error_msg = f"{get_mave_csv_schematype_from_exception(str(e)).title()} filetype not found"
+        error_msg = f"{get_mave_csv_schematype_from_exception(str(e)).title()} filetype not found."
         return error_msg, 400
 
     # Get output LLR CSV stream via internal API POST request.
