@@ -39,8 +39,6 @@ def validate_benchmark_schema(csv_filepath, file_descriptor="MAVE benchmark file
         benchmark_df = benchmark_df[list(SCHEMA)]
         # Attempt benchmark schema validation
         benchmark_schema(benchmark_df)
-        # Re-export dataframe to `csv_filepath`
-        benchmark_df.to_csv(csv_filepath, index=False)
     except (KeyError, pa.errors.SchemaError) as e:
         raise InvalidCsvSchema(f"Invalid schema: {file_descriptor} encountered the following problem: {e}") from e
 

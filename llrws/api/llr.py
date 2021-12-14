@@ -18,9 +18,13 @@ class LLR(Resource):
     parse.add_argument("score_file", type=werkzeug.datastructures.FileStorage, location="files")
 
     def get(self):
+        """Simple GET request routed to `LLR`."""
         return {"rothlab": "LLR Web Service"}
 
     def post(self):
+        """Handles POST request routed to `LLR`. Caller must upload two files (benchmark and score).
+        If validation of two files successful, an LLR will be generated and streamed as CSV to the
+        caller."""
         # Example cURL call: curl -v POST -H "Content-Type: multipart/form-data" -F "benchmark_file=@table-1.csv" -F "score_file=@table-2.csv" http://localhost:5000/api/
         args = self.parse.parse_args()
         mave_csv_filepaths = generate_mave_csv_filepaths()
