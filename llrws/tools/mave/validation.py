@@ -1,13 +1,14 @@
 import csv
 import warnings
 
-warnings.simplefilter(action="ignore", category=UserWarning)
 
 import numpy as np
 import pandas as pd
 import pandera as pa
 
 from llrws.exceptions import InvalidCsvSchema, InvalidCsvSchemaType
+
+warnings.simplefilter(action="ignore", category=UserWarning)
 
 
 def get_schema_type(csv_filepath):

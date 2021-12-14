@@ -4,7 +4,8 @@ import werkzeug
 
 from llrws.exceptions import InvalidCsvSchema, RscriptException
 from llrws.tools.mave import generate_mave_csv_filepaths
-from llrws.tools.mave.validation import validate_benchmark_schema, validate_score_schema
+from llrws.tools.mave.validation.benchmark import validate_benchmark_schema
+from llrws.tools.mave.validation.score import validate_score_schema
 from llrws.tools.rscripts import execute_maveLLR_rscript
 from llrws.tools.web import rm_files, send_file_for_download, validate_file_properties
 

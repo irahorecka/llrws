@@ -12,13 +12,10 @@ from flask import render_template, make_response, request, url_for, Blueprint
 from flask_cors import cross_origin
 
 from llrws.exceptions import FileValidationError, InvalidCsvSchema, InvalidUploadFile
-from llrws.tools.mave import (
-    generate_mave_csv_filepaths,
-    get_mave_csv_schematype_from_exception,
-    rename_mave_csv_file_by_schematype,
-)
+from llrws.tools.mave import generate_mave_csv_filepaths, get_mave_csv_schematype_from_exception
 from llrws.tools.mave.tidydata import get_mave_csv_sorted_by_hgvs_pro
-from llrws.tools.mave.validation import validate_benchmark_schema, validate_score_schema
+from llrws.tools.mave.validation.score import validate_score_schema, export_score_file
+from llrws.tools.mave.validation.benchmark import validate_benchmark_schema, export_benchmark_file
 from llrws.tools.web import rm_files, validate_file_properties
 
 main = Blueprint("main", __name__)
@@ -46,11 +43,14 @@ def upload_score():
         # Raised when user deletes file from dropzone.
         return "No file", 200
 
+    score_filepath = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))["score"]
     try:
-        validate_and_save_mave_csv_file_upload(upload_file, validate_score_schema, "score")
-        return "Upload successful", 200
+        validate_mave_csv_file_upload(upload_file, score_filepath, validate_score_schema, "score")
     except InvalidUploadFile as e:
         return str(e), 400
+
+    export_score_file(score_filepath)
+    return "Upload successful", 200
 
 
 @cross_origin(supports_credentials=True)
@@ -62,32 +62,29 @@ def upload_benchmark():
     except KeyError:
         return "No file", 200
 
+    benchmark_filepath = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))["benchmark"]
     try:
-        validate_and_save_mave_csv_file_upload(upload_file, validate_benchmark_schema, "benchmark")
-        return "Upload successful", 200
+        validate_mave_csv_file_upload(upload_file, benchmark_filepath, validate_benchmark_schema, "benchmark")
     except InvalidUploadFile as e:
         return str(e), 400
 
+    export_benchmark_file(benchmark_filepath)
+    return "Upload successful", 200
 
-def validate_and_save_mave_csv_file_upload(upload_file, validation_schema, schema_type):
-    upload_csv_filepath = generate_mave_csv_filepaths()["upload"]
+
+def validate_mave_csv_file_upload(upload_file, upload_filepath, validation_schema, schema_type):
+    # Check if the general file properties are valid...
     try:
-        # Check if the general file properties are valid...
-        try:
-            validate_file_properties(upload_file, file_descriptor="Uploaded file")
-        except FileValidationError as e:
-            raise InvalidUploadFile(e) from e
+        validate_file_properties(upload_file, file_descriptor="Uploaded file")
+    except FileValidationError as e:
+        raise InvalidUploadFile(e) from e
 
-        # ... then check if the CSV content is valid.
-        upload_file.save(upload_csv_filepath)
-        try:
-            validation_schema(upload_csv_filepath)
-        except InvalidCsvSchema:
-            raise InvalidUploadFile(f"Uploaded CSV file is not recognized as a {schema_type.title()} CSV file.")
-
-        rename_mave_csv_file_by_schematype(upload_csv_filepath, schema_type, session_id=request.cookies.get("uid"))
-    finally:
-        rm_files((upload_csv_filepath,))
+    # ... then check if the CSV schema is valid.
+    upload_file.save(upload_filepath)
+    try:
+        validation_schema(upload_filepath)
+    except InvalidCsvSchema:
+        raise InvalidUploadFile(f"Uploaded CSV file is not recognized as a {schema_type.title()} CSV file.")
 
 
 @main.route("/data")

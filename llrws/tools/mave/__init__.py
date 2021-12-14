@@ -45,21 +45,3 @@ def get_mave_csv_schematype_from_exception(exception):
         return exception.lower().split(".csv")[-2].split("-")[-1]
     except IndexError:
         return ""
-
-
-def rename_mave_csv_file_by_schematype(csv_filepath, csv_schematype, session_id=None):
-    """Rename `csv_filepath` as '{`session_id`}-{`csv_schematype`}.csv'.
-
-    Args:
-        csv_filepath (str): CSV filepath to rename
-        csv_schematype (str): MAVE CSV schema type
-
-    Kwargs:
-        session_id (str): Unique identifier for the CSV file. If not provided, a new
-                          unique identifier will be generated.
-
-    Returns:
-        (None)
-    """
-    csv_schematype_filepath = generate_mave_csv_filepaths(session_id=session_id)[csv_schematype]
-    os.rename(csv_filepath, csv_schematype_filepath)
