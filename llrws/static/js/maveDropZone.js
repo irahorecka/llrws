@@ -64,6 +64,9 @@ function executeOnSuccess(DropzoneObj, DropzoneElementID, fileStatusSelector) {
             return;
         }
         invokeJobReady(DropzoneElementID, fileStatusSelector);
+        if (areNumFilesUploaded(2)) {
+            setActiveButtonState();
+        }
         return;
     }
     // At this point, we know a 200 response was received from the server
@@ -96,6 +99,21 @@ function isDuplicateFile(DropzoneObj) {
     var fileNames = DropzoneObj.getAcceptedFiles().map(x => x.name);
     var uniqueFileNames = new Set(fileNames)
     if (uniqueFileNames.size != fileNames.length) {
+        return true;
+    }
+    return false;
+}
+
+function areNumFilesUploaded(num) {
+    /**
+     * Checks if `num` files are uploaded in cumulative Dropzone instances.
+     * @return {[bool]} Indicates if number of uploaded files matches `num`.
+     */
+    var uploadedFilename = new Set();
+    $(".dz-filename span").each(function(){
+        uploadedFilename.add($(this).text().trim().length);
+    });
+    if (uploadedFilename.size == num) {
         return true;
     }
     return false;

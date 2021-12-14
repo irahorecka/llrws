@@ -16,7 +16,7 @@ from llrws.tools.mave import generate_mave_csv_filepaths, get_mave_csv_schematyp
 from llrws.tools.mave.tidydata import get_mave_csv_sorted_by_hgvs_pro
 from llrws.tools.mave.validation.score import validate_score_schema, export_score_file
 from llrws.tools.mave.validation.benchmark import validate_benchmark_schema, export_benchmark_file
-from llrws.tools.web import rm_files, validate_file_properties
+from llrws.tools.web import validate_file_properties
 
 main = Blueprint("main", __name__)
 
@@ -36,16 +36,16 @@ def index():
 @cross_origin(supports_credentials=True)
 @main.route("/upload/score", methods=["POST"])
 def upload_score():
-    """Demo upload validation for CSV files."""
+    """Validates uploaded score CSV file and saves CSV file if validation is successful."""
     try:
-        upload_file = request.files["file"]
+        upload_fileobj = request.files["file"]
     except KeyError:
         # Raised when user deletes file from dropzone.
         return "No file", 200
 
     score_filepath = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))["score"]
     try:
-        validate_mave_csv_file_upload(upload_file, score_filepath, validate_score_schema, "score")
+        validate_mave_csv_file_upload(upload_fileobj, score_filepath, validate_score_schema, "score")
     except InvalidUploadFile as e:
         return str(e), 400
 
@@ -56,15 +56,15 @@ def upload_score():
 @cross_origin(supports_credentials=True)
 @main.route("/upload/benchmark", methods=["POST"])
 def upload_benchmark():
-    """Demo upload validation for CSV files."""
+    """Validates uploaded benchmark CSV file and saves CSV file if validation is successful."""
     try:
-        upload_file = request.files["file"]
+        upload_fileobj = request.files["file"]
     except KeyError:
         return "No file", 200
 
     benchmark_filepath = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))["benchmark"]
     try:
-        validate_mave_csv_file_upload(upload_file, benchmark_filepath, validate_benchmark_schema, "benchmark")
+        validate_mave_csv_file_upload(upload_fileobj, benchmark_filepath, validate_benchmark_schema, "benchmark")
     except InvalidUploadFile as e:
         return str(e), 400
 
@@ -72,24 +72,38 @@ def upload_benchmark():
     return "Upload successful", 200
 
 
-def validate_mave_csv_file_upload(upload_file, upload_filepath, validation_schema, schema_type):
+def validate_mave_csv_file_upload(upload_fileobj, upload_filepath, validation_schema, schema_type):
+    """Validates uploaded file object as the appropriate MAVE CSV file.
+
+    Args:
+        upload_fileobj (werkzeug.datastructures.FileStorage): FileStorage instance of an uploaded file
+        upload_filepath (str): Filepath to save `upload_fileobj`
+        validation_schema (function): Schema validation function to validate uploaded file
+        schema_type (str): Descriptor for validation schema
+
+    Raises:
+        InvalidUploadFile: Uploaded file failed validation
+
+    Returns:
+        (None)
+    """
     # Check if the general file properties are valid...
     try:
-        validate_file_properties(upload_file, file_descriptor="Uploaded file")
+        validate_file_properties(upload_fileobj, file_descriptor="Uploaded file")
     except FileValidationError as e:
         raise InvalidUploadFile(e) from e
 
     # ... then check if the CSV schema is valid.
-    upload_file.save(upload_filepath)
+    upload_fileobj.save(upload_filepath)
     try:
         validation_schema(upload_filepath)
     except InvalidCsvSchema:
         raise InvalidUploadFile(f"Uploaded CSV file is not recognized as a {schema_type.title()} CSV file.")
 
 
-@main.route("/data")
-def data():
-    """AJAX: Load CSV data when called."""
+@main.route("/get-llr")
+def get_llr():
+    """AJAX: Load LLR data from uploaded score and benchmark file."""
     # Get CSV filepaths using UID stored in cookie session
     mave_csv_filepaths = generate_mave_csv_filepaths(session_id=request.cookies.get("uid"))
     mave_benchmark_file = mave_csv_filepaths["benchmark"]

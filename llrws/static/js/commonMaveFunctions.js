@@ -12,8 +12,7 @@ function invokeJobReady(borderSelector, fileStatusSelector) {
      */
     setBorderColor(borderSelector, "var(--success-color)");
     setFileStatusVisible(fileStatusSelector);
-    setDefaultButtonState();
-    $('#mave-button-submit').prop('disabled', false);
+    setInactiveButtonState();
 }
 
 function invokeJobSuspension(borderSelector, fileStatusSelector) {
@@ -25,7 +24,7 @@ function invokeJobSuspension(borderSelector, fileStatusSelector) {
      */
     setBorderColor(borderSelector, "var(--failure-color)");
     setFileStatusVisible(fileStatusSelector);
-    $('#mave-button-submit').prop('disabled', true);
+    setInactiveButtonState();
 }
 
 function invokeJobOpen(borderSelector, fileStatusSelector) {
@@ -37,7 +36,7 @@ function invokeJobOpen(borderSelector, fileStatusSelector) {
      */
     setBorderColor(borderSelector, "var(--neutral-color)");
     setFileStatusHidden(fileStatusSelector);
-    $('#mave-button-submit').prop('disabled', true);
+    setInactiveButtonState();
 }
 
 function setBorderColor(borderSelector, borderColor) {
@@ -78,7 +77,14 @@ function setLoadingButtonState() {
 	$('#mave-button-submit').val('Loading...').prop('disabled', true);
 }
 
-function setDefaultButtonState() {
+function setActiveButtonState() {
+    /**
+     * Sets MAVE submit button text to 'Get MAVE LLR' and enables button.
+     */
+	$('#mave-button-submit').val('Get MAVE LLR').prop('disabled', false);
+}
+
+function setInactiveButtonState() {
     /**
      * Sets MAVE submit button text to 'Get MAVE LLR' and disables button.
      */

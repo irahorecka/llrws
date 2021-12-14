@@ -32,7 +32,7 @@ $(document).ready(function() {
 		scoreCSVDropzone = Dropzone.forElement("#score-upload-csv");
 		benchmarkCSVDropzone = Dropzone.forElement("#benchmark-upload-csv");
 		$.ajax({
-			url: "/data",
+			url: "/get-llr",
 			success: function(data) {
 				// Clear existing content.
 				table.clear();
@@ -41,7 +41,7 @@ $(document).ready(function() {
 				// Remove loaded Dropzone files on successful load.
 				scoreCSVDropzone.removeAllFiles(true);
 				benchmarkCSVDropzone.removeAllFiles(true);
-				setDefaultButtonState();
+				setInactiveButtonState();
 				scrollToBottomOfPage();
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
@@ -54,7 +54,7 @@ $(document).ready(function() {
 						alert("Error [500]: " + jqXHR.responseText);
 						invokeOnAjaxError();
 				}
-				setDefaultButtonState();
+				setInactiveButtonState();
 			},
 		});
 	});
