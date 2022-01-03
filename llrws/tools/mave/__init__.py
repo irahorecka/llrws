@@ -1,3 +1,10 @@
+"""
+/llrws/tools/mave/__init__.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for interfacing with MAVE-related tasks.
+"""
+
 import os
 from uuid import uuid4
 

@@ -1,3 +1,11 @@
+"""
+/llrws/api/llr.py
+~~~~~~~~~~~~~~~~~~~~
+
+Flask RESTful module to handle log-linear regression (LLR) computation of multiplexed assays
+of variant effects (MAVE) benchmark and scoreset files.
+"""
+
 from flask_restful import Resource, reqparse
 import werkzeug
 
@@ -11,6 +19,15 @@ from llrws.tools.web import rm_files, send_file_for_download, validate_file_prop
 
 
 class LLR(Resource):
+    """Flask RESTful class to handle GET and POST requests.
+
+    GET: Simply returns JSON content of LLR service title.
+    POST: Caller posts two files (scoreset CSV file and benchmark CSV file) as argument (see example below).
+          If processing of files is successful, caller will be returned an LLR CSV stream.
+      E.g.:
+          $ curl -v POST -H "Content-Type: multipart/form-data" -F "benchmark_file=@benchmark.csv" -F "score_file=@scoreset.csv" http://localhost:5000/api/
+    """
+
     # Build request parser and parse post request file contents.
     # Declare reqparse.ReqestParser here to avoid instantiation overhead when POST request is made.
     parse = reqparse.RequestParser()

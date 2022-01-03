@@ -1,3 +1,10 @@
+"""
+/llrws/tools/mave/validation/benchmark.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for tidying MAVE data.
+"""
+
 import csv
 import re
 from io import StringIO

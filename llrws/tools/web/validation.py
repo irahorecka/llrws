@@ -1,3 +1,10 @@
+"""
+/llrws/tools/web/validation.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for validating files received from clients.
+"""
+
 import os
 
 from flask import current_app

@@ -1,3 +1,10 @@
+"""
+/llrws/tools/rscripts/__init__.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for interfacing with Rscripts in directory.
+"""
+
 import os
 import subprocess
 

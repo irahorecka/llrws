@@ -1,3 +1,10 @@
+"""
+/llrws/tools/web/__init__.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for client-interfacing or simple web tasks.
+"""
+
 import os
 
 from flask import send_file

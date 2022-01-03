@@ -1,3 +1,10 @@
+"""
+/llrws/tools/mave/validation/score.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for validating MAVE scoreset CSV file.
+"""
+
 import pandera as pa
 
 from llrws.exceptions import InvalidCsvSchema

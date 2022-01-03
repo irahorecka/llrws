@@ -1,3 +1,10 @@
+"""
+/llrws/tools/mave/validation/__init__.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for interfacing with MAVE file validation tasks.
+"""
+
 import csv
 import warnings
 

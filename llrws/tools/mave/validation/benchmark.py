@@ -1,3 +1,10 @@
+"""
+/llrws/tools/mave/validation/benchmark.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Tools for validating MAVE benchmark CSV file.
+"""
+
 import pandera as pa
 
 from llrws.exceptions import InvalidCsvSchema
