@@ -36,7 +36,8 @@ Start up the flask web application:
 
 `$ python run.py`
 
-Navigate to `http://localhost:5000` on your favorite browser.
+On macOS Big Sur, port 5000 is reserved for AirPlay. This app is configured for port 5001, instead.
+Navigate to `http://localhost:5001` on your favorite browser.
 
 ## Navigation
 
