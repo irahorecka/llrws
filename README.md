@@ -3,7 +3,7 @@
 Log Linear Regression (LLR) Web Service. LLRWS is a web service to generate an LLR dataset from a MAVE scoreset and variant reference file (both CSV).
 
 <p align="center">
-    <img src="documentation/landing-page.png">
+    <img src="docs/landing-page.png">
 </p>
 
 ## Background
